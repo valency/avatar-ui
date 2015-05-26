@@ -1,0 +1,25 @@
+body {
+    font-family: 'WOL_Reg', 'Segoe UI', Tahoma, Helvetica, sans-serif;
+    font-size: 12px;
+    padding: 20px;
+}
+
+.string {
+    color: green;
+}
+
+.number {
+    color: pink;
+}
+
+.boolean {
+    color: red;
+}
+
+.null {
+    color: magenta;
+}
+
+.key {
+    color: blue;
+}
