@@ -1,7 +1,7 @@
 <html>
 <head>
     <title>Project Joker</title>
-    <?php require "../../php/lib.php"; ?>
+    <?php require "../php/lib.php"; ?>
 </head>
 <body>
 <h1>Project Avatar</h1>

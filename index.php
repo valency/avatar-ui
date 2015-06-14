@@ -9,7 +9,9 @@
 </head>
 <body onload="$('#main').center();">
 <div id="main">
-    Nobody here but us chickens.
+    <h3>The NiCPU Rack - Machine 3</h3>
+
+    <p>Nobody here but us chickens.</p>
 </div>
 </body>
 </html>
