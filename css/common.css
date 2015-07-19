@@ -4,6 +4,10 @@ body {
     padding: 20px;
 }
 
+hr {
+    margin: 0;
+}
+
 .string {
     color: green;
 }

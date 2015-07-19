@@ -1,4 +1,4 @@
-var API_SERVER = "http://120.25.209.91:9001/";
+var API_SERVER = "http://nicpu3.cse.ust.hk:9001/";
 var COLOR_PALETTE = ["#467D97", "#5DA5DA", "#FAA43A", "#60BD68", "#F17CB0", "#B2912F", "#B276B2", "#DECF3F", "#F15854", "#A03423"];
 
 jQuery.fn.center = function () {
@@ -8,8 +8,8 @@ jQuery.fn.center = function () {
     return this;
 };
 
-String.prototype.toTitleCase = function (str) {
-    return str.replace(/\w\S*/g, function (txt) {
+String.prototype.toTitleCase = function () {
+    return this.replace(/\w\S*/g, function (txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
 };

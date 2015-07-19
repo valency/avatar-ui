@@ -1,0 +1,30 @@
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#map_canvas {
+    height: 100%;
+    left: 300px;
+    top: 0;
+    position: fixed;
+}
+
+#dashboard_container {
+    left: 0;
+    top: 0;
+    width: 299px;
+    border-right: 1px solid black;
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+}
+
+#dashboard_container div {
+    padding: 10px;
+}
