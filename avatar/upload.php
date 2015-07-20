@@ -1,52 +1,38 @@
 <html>
 <head>
-    <title>Project Joker</title>
-    <?php require "../../php/lib.php"; ?>
+    <?php require "../php/lib.php"; ?>
+    <title>The Avatar System: Data Management</title>
+    <script src="/lib/jquery-file-upload-9.10.4/js/vendor/jquery.ui.widget.js"></script>
+    <script src="/lib/jquery-file-upload-9.10.4/js/jquery.iframe-transport.js"></script>
+    <script src="/lib/jquery-file-upload-9.10.4/js/jquery.fileupload.js"></script>
+    <script src="js/upload.js" type="text/javascript"></script>
 </head>
 <body>
-<h1>CSV Data Uploader</h1>
-
-<h3>Last Update: <?php echo date("F d Y, H:i:s", filemtime("./upload.php")); ?></h3>
-<?php
-if (isset($_POST["submit"]) && is_uploaded_file($_FILES['file_upload']['tmp_name'])) {
-    $target_dir = "./data/";
-    echo "<p>File will be uploaded to: " . $target_dir . "</p>";
-    $target_file = $target_dir . basename($_FILES["file_upload"]["name"]);
-    echo "<p>Target file is: " . $target_file . "</p>";
-    $extension = pathinfo($target_file, PATHINFO_EXTENSION);
-    echo "<p>File extension is: " . $extension . "</p>";
-    $upload_ok = true;
-    // Check if file already exists
-    if (file_exists($target_file)) {
-        echo "<p>Sorry, file already exists.</p>";
-        $upload_ok = false;
-    }
-    // Check file size
-    if ($_FILES["file_upload"]["size"] > 100000000) {
-        echo "<p>Sorry, your file is too large.</p>";
-        $upload_ok = false;
-    }
-    // Allow certain file formats
-    if ($extension != "csv" && $extension != "txt") {
-        echo "<p>Sorry, only CSV & TXT files are allowed.</p>";
-        $upload_ok = false;
-    }
-    // Check if $upload_ok is set to 0 by an error
-    if ($upload_ok == false) {
-        echo "<p>Sorry, your file was not uploaded.</p>";
-        // if everything is ok, try to upload file
-    } else {
-        if (move_uploaded_file($_FILES["file_upload"]["tmp_name"], $target_file)) {
-            echo "<p>The file '" . basename($_FILES["file_upload"]["name"]) . "' has been uploaded.</p>";
-        } else {
-            echo "<p>Sorry, there was an error uploading your file.</p>";
-        }
-    }
-} else { ?>
-    <form action="upload.php" method="post" enctype="multipart/form-data">
-        <input type="file" name="file_upload" id="file_upload">
-        <input type="submit" name="submit" value="Upload">
-    </form>
-<?php } ?>
+<div class="page-container">
+    <div class="page-content-wrapper">
+        <div class="page-content">
+            <legend>Data Management <span style="color:grey;font-size:9px;">v0.<?php echo date("n.j", filemtime("./index.php")); ?></span></legend>
+            <p>
+                <button class="btn btn-primary btn-xs" type="button" onclick="$('#file_upload').click();">Upload</button>
+                <input id="file_upload" class="hidden" type="file" name="files[]" data-url="./data/" multiple/>
+                <span class="text-grey"> * Required Headers: id, taxi, lat, lng, t (yyyy-mm-dd hh:mm:ss), speed, angle, occupy</span>
+            </p>
+            <?php if ($handle = opendir('./data/')) {
+                while (false !== ($entry = readdir($handle))) {
+                    if ($entry != "." && $entry != ".." && pathinfo($entry, PATHINFO_EXTENSION) == "csv") {
+                        echo "<p>";
+                        echo "<span><a href='data/" . $entry . "' target='_blank'><i class='fa fa-file-o'></i> " . $entry . "</a></span><br/>";
+                        echo "<span>" . number_format(filesize('./data/' . $entry)) . " bytes</span> | ";
+                        echo "<span>" . date("F d Y, H:i:s", filemtime('./data/' . $entry)) . "</span> | ";
+                        echo "<a href='javascript:void(0)' onclick=\"datafile_import('" . $entry . "')\">Import</a> | ";
+                        echo "<a href='javascript:void(0)' onclick=\"datafile_delete('" . $entry . "')\" class='text-danger'>Delete</a>";
+                        echo "</p>";
+                    }
+                }
+                closedir($handle);
+            } ?>
+        </div>
+    </div>
+</div>
 </body>
 </html>

@@ -9,8 +9,17 @@
 <body>
 <div id="dashboard_container">
     <div>
-        <span style="font-weight:bold;">The Avatar System</span>
-        <span style="color:grey;">v0.<?php echo date("n.j", filemtime("./index.php")); ?></span>
+        <span class="bold">The Avatar System</span>
+        <span style="color:grey;font-size:9px;">v0.<?php echo date("n.j", filemtime("./index.php")); ?></span>
+
+        <div class="btn-group pull-right" style="margin-top:-5px;">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                <i class="fa fa-cog"></i>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="upload.php" target="_blank">Data Management</a></li>
+            </ul>
+        </div>
     </div>
     <hr/>
     <div>
@@ -18,22 +27,5 @@
     </div>
 </div>
 <div id="map_canvas"></div>
-<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
-            </div>
-            <div class="modal-body">
-                ...
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
 </body>
 </html>

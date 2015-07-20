@@ -8,6 +8,14 @@ hr {
     margin: 0;
 }
 
+.text-grey {
+    color: grey;
+}
+
+.bold {
+    font-weight: bold;
+}
+
 .string {
     color: green;
 }
