@@ -12,7 +12,7 @@
         <span class="bold">The Avatar System</span>
         <span style="color:grey;font-size:9px;">v0.<?php echo date("n.j", filemtime("./index.php")); ?></span>
 
-        <div class="btn-group pull-right" style="margin-top:-5px;">
+        <div class="btn-group pull-right">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                 <i class="fa fa-cog"></i>
             </a>
@@ -22,9 +22,10 @@
         </div>
     </div>
     <hr/>
-    <div>
-        <a href="javascript:void(0)" data-toggle="modal" data-target="#modal">Launch demo modal</a>
+    <div class="form-group" style="margin-bottom:0;">
+        <input id="search_id" class="form-control input-sm" placeholder="Trajectory ID"/>
     </div>
+    <div id="console"></div>
 </div>
 <div id="map_canvas"></div>
 </body>
