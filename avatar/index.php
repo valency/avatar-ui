@@ -8,8 +8,8 @@
 </head>
 <body>
 <div id="dashboard_container">
-    <div>
-        <span class="bold">The Avatar System</span>
+    <div style="font-size:16px;" class="text-success">
+        <span>The Avatar System</span>
         <span style="color:grey;font-size:9px;">v0.<?php echo date("n.j", filemtime("./index.php")); ?></span>
 
         <div class="btn-group pull-right">

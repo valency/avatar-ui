@@ -11,7 +11,7 @@
 <div class="page-container">
     <div class="page-content-wrapper">
         <div class="page-content">
-            <legend>Data Management <span style="color:grey;font-size:9px;">v0.<?php echo date("n.j", filemtime("./index.php")); ?></span></legend>
+            <legend>Data Management <span style="color:grey;font-size:9px;">v0.<?php echo date("n.j", filemtime("./upload.php")); ?></span></legend>
             <p>
                 <button class="btn btn-primary btn-xs" type="button" onclick="$('#file_upload').click();">Upload</button>
                 <input id="file_upload" class="hidden" type="file" name="files[]" data-url="./data/" multiple/>
