@@ -8,7 +8,7 @@
     <script src="js/common.js"></script>
 </head>
 <body onload="$('#main').center();">
-<div id="main">
+<div id="main" style="text-align:center;">
     <h3>The NiCPU Rack - Machine 3</h3>
 
     <p>Nobody here but us chickens.</p>

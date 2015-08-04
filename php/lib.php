@@ -10,4 +10,5 @@
 <script src="/lib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="/lib/bootstrap3-typeahead.min.js"></script>
 <script src="/lib/bootbox.min.js"></script>
+<script src="/lib/moment.js"></script>
 <script src="/js/common.js"></script>

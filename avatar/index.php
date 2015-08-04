@@ -2,8 +2,11 @@
 <head>
     <?php require "../php/lib.php"; ?>
     <title>The Avatar System</title>
+    <link rel="stylesheet" href="/lib/ion.rangeslider-2.0.13/css/ion.rangeSlider.css"/>
+    <link rel="stylesheet" href="/lib/ion.rangeslider-2.0.13/css/ion.rangeSlider.skinFlat.css"/>
     <link rel="stylesheet" href="css/avatar.css"/>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.5&ak=3juZrhGVW1FG9xSdspQHuSpU"></script>
+    <script type="text/javascript" src="/lib/ion.rangeslider-2.0.13/js/ion-rangeSlider/ion.rangeSlider.min.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
 </head>
 <body>
@@ -22,7 +25,8 @@
         </div>
     </div>
     <hr/>
-    <div class="form-group" style="margin-bottom:0;">
+    <div class="form-group" style="margin-bottom:0;text-align:center;">
+        <input id="search_range"/>
         <input id="search_id" class="form-control input-sm" placeholder="Trajectory ID"/>
     </div>
     <div id="console"></div>
