@@ -1,21 +1,19 @@
-html {
-    height: 100%;
-}
-
 body {
-    height: 100%;
-    margin: 0;
     padding: 0;
 }
 
-#map_canvas {
+hr {
+    margin: 0;
+}
+
+#map-canvas {
     height: 100%;
     left: 300px;
     top: 0;
     position: fixed;
 }
 
-#dashboard_container {
+#dashboard-container {
     left: 0;
     top: 0;
     width: 299px;
@@ -25,6 +23,6 @@ body {
     position: fixed;
 }
 
-#dashboard_container > div {
+#dashboard-container > div {
     padding: 10px;
 }

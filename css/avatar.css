@@ -1,11 +1,13 @@
+html {
+    height: 100%;
+}
+
 body {
     font-family: 'WOL_Reg', 'Segoe UI', Tahoma, Helvetica, sans-serif;
     font-size: 12px;
-    padding: 20px;
-}
-
-hr {
+    height: 100%;
     margin: 0;
+    padding: 20px;
 }
 
 .text-grey {
@@ -36,7 +38,7 @@ hr {
     color: blue;
 }
 
-.no_border {
+.no-border {
     border: 0;
 }
 

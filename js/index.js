@@ -5,8 +5,8 @@ var markers = [];
 
 $(document).ready(function () {
     // Baidu map
-    $("#map_canvas").width($(window).width() - 300);
-    map = new BMap.Map("map_canvas");
+    $("#map-canvas").width($(window).width() - 300);
+    map = new BMap.Map("map-canvas");
     map.addControl(new BMap.NavigationControl());
     map.addControl(new BMap.ScaleControl());
     map.addControl(new BMap.OverviewMapControl());
@@ -15,20 +15,20 @@ $(document).ready(function () {
     map.centerAndZoom(point, 15);
     // Search button
     $.get(API_SERVER + "avatar/api/traj/get_all/", function (data) {
-        $("#search_id").typeahead({source: data.ids});
+        $("#search-id").typeahead({source: data.ids});
     });
-    $('#search_id').on('keyup', function (e) {
+    $('#search-id').on('keyup', function (e) {
         if (e.which == 13) {
             e.preventDefault();
-            $('#search_id').prop("disabled", true);
+            $('#search-id').prop("disabled", true);
             $("#console").html("<span class='text-danger'>Loading...</span>");
             setTimeout(function () {
-                search($("#search_id").val());
+                search($("#search-id").val());
             }, 1000);
         }
     });
     // Time range slider
-    $("#search_range").ionRangeSlider({
+    $("#search-range").ionRangeSlider({
         type: "double",
         min: 0,
         max: 24 * 3600 - 1,
@@ -42,20 +42,21 @@ $(document).ready(function () {
 });
 
 function search(trajid) {
-    var search_range = $("#search_range").val().split(";");
+    var search_range = $("#search-range").val().split(";");
     $.get(API_SERVER + "avatar/api/traj/get/?id=" + trajid + "&ts=" + moment().startOf('day').seconds(search_range[0]).format('HH:mm:ss') + "&td=" + moment().startOf('day').seconds(search_range[1]).format('HH:mm:ss'), function (data) {
         traj = data;
         var html = "<p><span class='bold'>ID: </span>" + traj.id + "<br/>";
         html += "<span class='bold'>Taxi: </span>" + traj.taxi + "<br/>";
         html += "<span class='bold'>Size: </span>" + traj.trace.p.length + "</p>";
         $("#console").html(html);
-        $('#search_id').prop("disabled", false);
+        $('#search-id').prop("disabled", false);
         plot();
     });
 }
 
 function plot() {
-    $("#console").append("<span class='text-danger'>Plotting...</span>");
+    var console = $("#console");
+    console.append("<span class='text-danger'>Plotting...</span>");
     // Clear out
     map.clearOverlays();
     markers = [];
@@ -76,5 +77,5 @@ function plot() {
     });
     map.addOverlay(polyline);
     map.panTo(points[0]);
-    $("#console").children().last().remove();
+    console.children().last().remove();
 }
