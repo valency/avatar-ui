@@ -41,10 +41,12 @@ function map_import(file) {
         if (city != null && city != "") {
             bootbox.hideAll();
             bootbox.dialog({
-                message: "<i class='fa fa-spinner'></i> Importing \"" + file + "\", please be patient...",
+                message: "<span id='map-import-loading-span'><i id='spinner' class='text-info fa fa-spinner'></i> Cleaning previous import of \"" + file + "\", please be patient...</span>",
                 closeButton: false
             });
-            $.get(API_SERVER + "avatar/api/road_network/remove/?city=" + city, function (r) {
+            $.get(API_SERVER + "avatar/api/road_network/remove/?city=" + city).always(function () {
+                $("#spinner").switchClass("fa-spinner", "fa-check").switchClass("text-info", "text-success");
+                $("#map-import-loading-span").append(" OK.<br/><i class='text-info fa fa-spinner'></i> Importing \"" + file + "\", please be patient...");
                 $.get(API_SERVER + "avatar/api/road_network/create/?city=" + city + "&src=" + file, function (r) {
                     var msg = "<p>Import completed successfully.</p>";
                     msg += "<p>";
@@ -59,9 +61,6 @@ function map_import(file) {
                     bootbox.hideAll();
                     bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while processing the file!</span>");
                 });
-            }).fail(function () {
-                bootbox.hideAll();
-                bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while overwriting the road network!</span>");
             });
         }
     });

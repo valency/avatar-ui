@@ -11,7 +11,7 @@
 <div class="page-container">
     <div class="page-content-wrapper">
         <div class="page-content">
-            <legend>Data Management <span style="color:grey;font-size:9px;">v0.<?php echo date("n.j", filemtime("./upload.php")); ?></span></legend>
+            <legend style="color:green;">Data Management <span style="color:grey;font-size:9px;">v0.<?php echo date("n.j", filemtime("./upload.php")); ?></span></legend>
             <p>
                 <span class="bold">Trajectory Data Required Headers:</span> id, taxi, lat, lng, t (yyyy-mm-dd hh:mm:ss), speed, angle, occupy<br/>
                 <span class="bold">Map Data Required Headers:</span> roadid, partid, pointid, lng, lat
