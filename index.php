@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/index.css"/>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.5&ak=3juZrhGVW1FG9xSdspQHuSpU"></script>
     <script type="text/javascript" src="lib/ion.rangeslider-2.0.13/js/ion-rangeSlider/ion.rangeSlider.min.js"></script>
+    <script type="text/javascript" src="js/baidu.convert.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
 </head>
 <body>

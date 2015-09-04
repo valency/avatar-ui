@@ -2,6 +2,8 @@ var map = null;
 var traj = null;
 var polyline = null;
 var markers = [];
+var points = [];
+var traj_rendered = false;
 
 $(document).ready(function () {
     // Baidu map
@@ -55,27 +57,47 @@ function search(trajid) {
 }
 
 function plot() {
-    var console = $("#console");
-    console.append("<span class='text-danger'>Plotting...</span>");
+    $("#console").append("<span class='text-danger'>Plotting...</span>");
     // Clear out
     map.clearOverlays();
+    points = [];
     markers = [];
-    var points = [];
+    traj_rendered = false;
     // Plot
     for (var i = 0; i < traj.trace.p.length; i++) {
         var p = traj.trace.p[i];
         var point = new BMap.Point(p.p.lng, p.p.lat);
-        points.push(point);
-        var marker = new BMap.Marker(point, {title: i + "|" + p.t + "|" + p.p.lat + "|" + p.p.lng});
-        markers.push(marker);
-        map.addOverlay(marker);
+        points[i] = point;
+        BMap.Convertor.translate(point, 0, plot_marker_callback, i);
     }
-    polyline = new BMap.Polyline(points, {
-        strokeColor: "blue",
-        strokeWeight: 5,
-        strokeOpacity: 0.8
+}
+
+function plot_marker_callback(point, sequence) {
+    var marker = new BMap.Marker(point, {title: "ID: " + sequence});
+    marker.addEventListener("click", function () {
+        var msg = "<span class='bold'>ID: </span>" + traj.trace.p[sequence]["id"] + "<br/>";
+        msg += "<span class='bold'>Time Stamp: </span>" + traj.trace.p[sequence]["t"] + "<br/>";
+        msg += "<span class='bold'>Actual Latitude : </span>" + traj.trace.p[sequence]["p"]["lat"] + "<br/>";
+        msg += "<span class='bold'>Actual Longitude: </span>" + traj.trace.p[sequence]["p"]["lng"] + "<br/>";
+        msg += "<span class='bold'>On-Map Latitude : </span>" + point.lat + "<br/>";
+        msg += "<span class='bold'>On-Map Longitude: </span>" + point.lng + "<br/>";
+        msg += "<span class='bold'>Speed: </span>" + traj.trace.p[sequence]["speed"] + "<br/>";
+        msg += "<span class='bold'>Angle: </span>" + traj.trace.p[sequence]["angle"] + "<br/>";
+        msg += "<span class='bold'>Occupancy: </span>" + traj.trace.p[sequence]["occupy"];
+        this.openInfoWindow(new BMap.InfoWindow(msg, {title: "<span class='bold text-danger'>Point " + sequence + "</span><hr/>"}));
     });
-    map.addOverlay(polyline);
-    map.panTo(points[0]);
-    console.children().last().remove();
+    points[sequence] = point;
+    markers[sequence] = marker;
+    map.addOverlay(marker);
+    if (!traj_rendered && markers.length == traj.trace.p.length) {
+        traj_rendered = true;
+        polyline = new BMap.Polyline(points, {
+            strokeColor: "blue",
+            strokeWeight: 5,
+            strokeOpacity: 0.8
+        });
+        map.addOverlay(polyline);
+        map.panTo(point);
+        $("#console").children().last().remove();
+    }
 }
