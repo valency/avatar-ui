@@ -29,7 +29,7 @@ function clear_db() {
                 message: "<i class='fa fa-spinner'></i> Deleting all trajectories, please be patient...",
                 closeButton: false
             });
-            $.get(API_SERVER + "avatar/api/traj/remove_all/", function (r) {
+            $.get(API_SERVER + "avatar/traj/remove_all/", function (r) {
                 bootbox.hideAll();
                 bootbox.alert("All trajectories have been successfully deleted.");
             }).fail(function () {
@@ -45,7 +45,7 @@ function datafile_import(file) {
         message: "<i class='fa fa-spinner'></i> Importing \"" + file + "\", please be patient...",
         closeButton: false
     });
-    $.get(API_SERVER + "avatar/api/traj/import/?src=" + file, function (r) {
+    $.get(API_SERVER + "avatar/traj/import/?src=" + file, function (r) {
         var msg = r["ids"].length + " trajectories have been successfully imported.";
         bootbox.hideAll();
         bootbox.alert(msg);
@@ -63,10 +63,10 @@ function map_import(file) {
                 message: "<span id='map-import-loading-span'><i id='spinner' class='text-info fa fa-spinner'></i> Cleaning previous import of \"" + file + "\", please be patient...</span>",
                 closeButton: false
             });
-            $.get(API_SERVER + "avatar/api/road_network/remove/?city=" + city).always(function () {
+            $.get(API_SERVER + "avatar/road_network/remove/?city=" + city).always(function () {
                 $("#spinner").switchClass("fa-spinner", "fa-check").switchClass("text-info", "text-success");
                 $("#map-import-loading-span").append(" OK.<br/><i class='text-info fa fa-spinner'></i> Importing \"" + file + "\", please be patient...");
-                $.get(API_SERVER + "avatar/api/road_network/create/?city=" + city + "&src=" + file, function (r) {
+                $.get(API_SERVER + "avatar/road_network/create/?city=" + city + "&src=" + file, function (r) {
                     var msg = "<p>Import completed successfully.</p>";
                     msg += "<p>";
                     msg += "Road Network ID: " + r["road_network_id"] + "<br/>";

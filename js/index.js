@@ -13,7 +13,7 @@ $(document).ready(function () {
     map.addControl(new BMap.MapTypeControl());
     map.centerAndZoom(new BMap.Point(116.404, 39.915), 15);
     // Search button
-    $.get(API_SERVER + "avatar/api/traj/get_all/", function (data) {
+    $.get(API_SERVER + "avatar/traj/get_all/", function (data) {
         $("#search-id").typeahead({source: data.ids});
     });
     $('#search-id').on('keyup', function (e) {
@@ -42,7 +42,7 @@ $(document).ready(function () {
 
 function search(trajid) {
     var search_range = $("#search-range").val().split(";");
-    $.get(API_SERVER + "avatar/api/traj/get/?id=" + trajid + "&ts=" + moment().startOf('day').seconds(search_range[0]).format('HH:mm:ss') + "&td=" + moment().startOf('day').seconds(search_range[1]).format('HH:mm:ss'), function (data) {
+    $.get(API_SERVER + "avatar/traj/get/?id=" + trajid + "&ts=" + moment().startOf('day').seconds(search_range[0]).format('HH:mm:ss') + "&td=" + moment().startOf('day').seconds(search_range[1]).format('HH:mm:ss'), function (data) {
         traj = data;
         var html = "<p><span class='bold'>ID: </span>" + traj.id + "<br/>";
         html += "<span class='bold'>Taxi: </span>" + traj.taxi + "<br/>";

@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $.get(API_SERVER + "avatar/api/road_network/get_all/", function (r) {
+    $.get(API_SERVER + "avatar/road_network/get_all/", function (r) {
         $("#map-list-container").html("");
         for (var i = 0; i < r.length; i++) {
             var html = "<p>";
@@ -25,7 +25,7 @@ function create_grid(city, id) {
         message: "<i class='fa fa-spinner'></i> Creating grid system for \"" + city + "\" (" + id + "), please be patient...",
         closeButton: false
     });
-    $.get(API_SERVER + "avatar/api/road_network/grid/create/?id=" + id, function (r) {
+    $.get(API_SERVER + "avatar/road_network/grid/create/?id=" + id, function (r) {
         bootbox.hideAll();
         bootbox.alert(r["grid_cell_count"] + " grid cells have been successfully created for \"" + city + "\" (" + id + ").");
     }).fail(function () {
