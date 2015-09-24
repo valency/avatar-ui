@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="lib/jquery-ui-1.11.3/jquery-ui.min.css">
 <link rel="stylesheet" href="lib/bootstrap-3.3.5/css/bootstrap.min.css">
 <link rel="stylesheet" href="lib/paper.bootstrap.min.css">
-<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="css/avatar.css"/>
 <script src="lib/jquery-ui-1.11.3/external/jquery/jquery.js"></script>
 <script src="lib/jquery-ui-1.11.3/jquery-ui.min.js"></script>

@@ -28,6 +28,7 @@
     <hr/>
     <div class="form-group" style="margin-bottom:0;text-align:center;">
         <input id="search-range"/>
+        <select id="search-city" class="form-control input-sm"></select>
         <input id="search-id" class="form-control input-sm" placeholder="Trajectory ID"/>
     </div>
     <div id="console"></div>

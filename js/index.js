@@ -20,7 +20,10 @@ $(document).ready(function () {
         if (e.which == 13) {
             e.preventDefault();
             $('#search-id').prop("disabled", true);
-            $("#console").html("<span class='text-danger'>Loading...</span>");
+            bootbox.dialog({
+                message: "<i class='fa fa-spinner'></i> Loading trajectory, please be patient...",
+                closeButton: false
+            });
             setTimeout(function () {
                 search($("#search-id").val());
             }, 1000);
@@ -38,23 +41,50 @@ $(document).ready(function () {
             return moment().startOf('day').seconds(n).format('HH:mm');
         }
     });
+    // City selector
+    $.get(API_SERVER + "avatar/road_network/get_all/", function (data) {
+        for (var i = 0; i < data.length; i++) {
+            $("#search-city").append("<option value='" + data[i].id + "'>" + data[i].city + "</option>");
+        }
+    });
 });
 
 function search(trajid) {
     var search_range = $("#search-range").val().split(";");
     $.get(API_SERVER + "avatar/traj/get/?id=" + trajid + "&ts=" + moment().startOf('day').seconds(search_range[0]).format('HH:mm:ss') + "&td=" + moment().startOf('day').seconds(search_range[1]).format('HH:mm:ss'), function (data) {
         traj = data;
-        var html = "<p><span class='bold'>ID: </span>" + traj.id + "<br/>";
-        html += "<span class='bold'>Taxi: </span>" + traj.taxi + "<br/>";
-        html += "<span class='bold'>Size: </span>" + traj.trace.p.length + "</p>";
+        var html = "<p><span class='bold text-success'>" + traj.id + "</span><br/>";
+        html += "<span class='label label-info'><i class='fa fa-taxi'></i> " + traj.taxi + "</span> ";
+        html += "<span class='label label-info'><i class='fa fa-map-marker'></i> " + traj.trace.p.length + "</span>";
+        if (traj.path != null) html += "<span class='label label-info'><i class='fa fa-map-signs'></i> Map-Matched</span>";
+        html += "</p><p>";
+        html += "<button class='btn btn-primary btn-xs' type='button' onclick='map_matching();'><i class='fa fa-globe'></i> Perform Map-Matching</button>";
+        html += "</p>";
         $("#console").html(html);
         $('#search-id').prop("disabled", false);
         plot();
     });
 }
 
+function map_matching() {
+    bootbox.dialog({
+        message: "<i class='fa fa-spinner'></i> Performing map-matching for trajectory: " + traj.id + " in city \"" + $("#search-city").text() + "\"...",
+        closeButton: false
+    });
+    $.get(API_SERVER + "avatar/map-matching/perform/?id=" + traj.id + "&city=" + $("#search-city").val(), function (data) {
+        bootbox.hideAll();
+        bootbox.alert("Finished.");
+    }).fail(function () {
+        bootbox.hideAll();
+        bootbox.alert("<span class='text-danger'><i class='fa fa-exclamation-triangle'></i> Something is wrong during map-matching!</span>");
+    });
+}
+
 function plot() {
-    $("#console").append("<span class='text-danger'>Plotting...</span>");
+    bootbox.dialog({
+        message: "<i class='fa fa-spinner'></i> Plotting, please be patient...",
+        closeButton: false
+    });
     // Clear out
     map.clearOverlays();
     markers = [];
@@ -103,12 +133,12 @@ function baidu_gps_convert(point, sequence) {
                     });
                     map.addOverlay(trace);
                     map.panTo(point);
-                    $("#console").children().last().remove();
+                    bootbox.hideAll();
                 }
             }
         },
         error: function () {
-            alert("Error");
+            bootbox.alert("<span class='text-danger'><i class='fa fa-exclamation-triangle'></i> Error while plotting: converting point from Baidu Maps cannot proceed.</span>");
         }
     });
 }
