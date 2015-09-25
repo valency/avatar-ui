@@ -55,7 +55,7 @@ function search(trajid) {
         traj = data;
         var html = "<p><span class='bold text-success'>" + traj.id + "</span><br/>";
         html += "<span class='label label-info'><i class='fa fa-taxi'></i> " + traj.taxi + "</span> ";
-        html += "<span class='label label-info'><i class='fa fa-map-marker'></i> " + traj.trace.p.length + "</span>";
+        html += "<span class='label label-info'><i class='fa fa-map-marker'></i> " + traj.trace.p.length + "</span> ";
         if (traj.path != null) html += "<span class='label label-info'><i class='fa fa-map-signs'></i> Map-Matched</span>";
         html += "</p><p>";
         html += "<button class='btn btn-primary btn-xs' type='button' onclick='map_matching();'><i class='fa fa-globe'></i> Perform Map-Matching</button>";
@@ -68,7 +68,7 @@ function search(trajid) {
 
 function map_matching() {
     bootbox.dialog({
-        message: "<i class='fa fa-spinner'></i> Performing map-matching for trajectory: " + traj.id + " in city \"" + $("#search-city").text() + "\"...",
+        message: "<i class='fa fa-spinner'></i> Performing map-matching, please be patient...",
         closeButton: false
     });
     $.get(API_SERVER + "avatar/map-matching/perform/?id=" + traj.id + "&city=" + $("#search-city").val(), function (data) {

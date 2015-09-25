@@ -3,7 +3,7 @@ $(document).ready(function () {
         $("#map-list-container").html("");
         for (var i = 0; i < r.length; i++) {
             var html = "<p>";
-            html += "<span class='text-info'><i class='fa fa-cube'></i> " + r[i].city + "</span><br/>";
+            html += "<span class='text-primary'><i class='fa fa-cube'></i> " + r[i].city + "</span><br/>";
             html += "<span class='bold'>Road Network ID: </span><span>" + r[i].id + "</span><br/>";
             html += "<span class='bold'># of Roads: </span><span>" + r[i].road_count + "</span><br/>";
             html += "<span class='bold'># of Intersections: </span><span>" + r[i].intersection_count + "</span><br/>";
@@ -12,7 +12,8 @@ $(document).ready(function () {
             html += "<span class='bold'># of Grid Cells on Longitude: </span><span>" + r[i].grid_lng_count + "</span><br/>";
             html += "<span class='bold'>Max Point of Map: </span><span>" + r[i].pmax.lat + ", " + r[i].pmax.lng + "</span><br/>";
             html += "<span class='bold'>Min Point of Map: </span><span>" + r[i].pmin.lat + ", " + r[i].pmin.lng + "</span><br/>";
-            html += "<a href='javascript:void(0)' onclick=\"create_grid('" + r[i].city + "','" + r[i].id + "')\">Create Grid</a>";
+            html += "<a href='javascript:void(0)' onclick=\"create_grid('" + r[i].city + "','" + r[i].id + "')\">Create Grid</a> | ";
+            html += "<a href='javascript:void(0)' onclick=\"delete_map('" + r[i].city + "','" + r[i].id + "')\" class='text-danger'>Delete</a>";
             html += "</p>";
             $("#map-list-container").append(html);
         }
@@ -32,4 +33,19 @@ function create_grid(city, id) {
         bootbox.hideAll();
         bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while creating the grid system for \"" + city + "\" (" + id + ") !</span>");
     });
+}
+
+function delete_map(city, id) {
+    bootbox.dialog({
+        title: "Delete Map",
+        message: "<p>The following map(s) will be deleted:</p><p class='text-danger'>" + city + " (ID: " + id + ")</p>",
+        buttons: {
+            Proceed: function () {
+                $.get(API_SERVER + "avatar/road_network/remove/?id=" + id, function (r) {
+                    location.reload();
+                });
+            }
+        }
+    });
+
 }

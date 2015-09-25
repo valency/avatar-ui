@@ -8,7 +8,7 @@
 <div class="page-container">
     <div class="page-content-wrapper">
         <div class="page-content">
-            <legend style="color:green;">Map Management <span style="color:grey;font-size:9px;">v0.<?php echo date("n.j", filemtime("./upload.php")); ?></span></legend>
+            <legend style="color:green;">Map Management <span style="color:grey;font-size:9px;">v0.<?php echo date("n.j", filemtime("./map.php")); ?></span></legend>
             <div id="map-list-container">
                 <span class="text-danger">Loading...</span>
             </div>
