@@ -22,6 +22,7 @@
             <ul class="dropdown-menu">
                 <li><a href="upload.php" target="_blank">Data Management</a></li>
                 <li><a href="map.php" target="_blank">Map Management</a></li>
+                <li><a href="trajectory.php" target="_blank">Trajectory Management</a></li>
             </ul>
         </div>
     </div>
