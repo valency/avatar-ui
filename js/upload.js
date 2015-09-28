@@ -60,26 +60,22 @@ function map_import(file) {
         if (city != null && city != "") {
             bootbox.hideAll();
             bootbox.dialog({
-                message: "<span id='map-import-loading-span'><i id='spinner' class='text-info fa fa-spinner'></i> Cleaning previous import of \"" + file + "\", please be patient...</span>",
+                message: "<i class='fa fa-spinner'></i> Importing \"" + file + "\", please be patient...",
                 closeButton: false
             });
-            $.get(API_SERVER + "avatar/road_network/remove/?city=" + city).always(function () {
-                $("#spinner").switchClass("fa-spinner", "fa-check").switchClass("text-info", "text-success");
-                $("#map-import-loading-span").append(" OK.<br/><i class='text-info fa fa-spinner'></i> Importing \"" + file + "\", please be patient...");
-                $.get(API_SERVER + "avatar/road_network/create/?city=" + city + "&src=" + file, function (r) {
-                    var msg = "<p>Import completed successfully.</p>";
-                    msg += "<p>";
-                    msg += "Road Network ID: " + r["road_network_id"] + "<br/>";
-                    msg += "Road Network Name: " + r["road_network_name"] + "<br/>";
-                    msg += "# of Roads: " + r["road_count"] + "<br/>";
-                    msg += "# of Intersections: " + r["intersection_count"];
-                    msg += "</p>";
-                    bootbox.hideAll();
-                    bootbox.alert(msg);
-                }).fail(function () {
-                    bootbox.hideAll();
-                    bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while processing the file!</span>");
-                });
+            $.get(API_SERVER + "avatar/road_network/create/?city=" + city + "&src=" + file, function (r) {
+                var msg = "<p>Import completed successfully.</p>";
+                msg += "<p>";
+                msg += "Road Network ID: " + r["road_network_id"] + "<br/>";
+                msg += "Road Network Name: " + r["road_network_name"] + "<br/>";
+                msg += "# of Roads: " + r["road_count"] + "<br/>";
+                msg += "# of Intersections: " + r["intersection_count"];
+                msg += "</p>";
+                bootbox.hideAll();
+                bootbox.alert(msg);
+            }).fail(function () {
+                bootbox.hideAll();
+                bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while processing the file! Maybe the city name is duplicated.</span>");
             });
         }
     });

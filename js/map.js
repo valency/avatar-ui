@@ -13,6 +13,7 @@ $(document).ready(function () {
             html += "<span class='bold'>Max Point of Map: </span><span>" + r[i].pmax.lat + ", " + r[i].pmax.lng + "</span><br/>";
             html += "<span class='bold'>Min Point of Map: </span><span>" + r[i].pmin.lat + ", " + r[i].pmin.lng + "</span><br/>";
             html += "<a href='javascript:void(0)' onclick=\"create_grid('" + r[i].city + "','" + r[i].id + "')\">Create Grid</a> | ";
+            html += "<a href='javascript:void(0)' onclick=\"clear_orphan('" + r[i].city + "','" + r[i].id + "')\">Clear Orphan Roads</a> | ";
             html += "<a href='javascript:void(0)' onclick=\"delete_map('" + r[i].city + "','" + r[i].id + "')\" class='text-danger'>Delete</a>";
             html += "</p>";
             $("#map-list-container").append(html);
@@ -23,15 +24,25 @@ $(document).ready(function () {
 
 function create_grid(city, id) {
     bootbox.dialog({
-        message: "<i class='fa fa-spinner'></i> Creating grid system for \"" + city + "\" (" + id + "), please be patient...",
-        closeButton: false
-    });
-    $.get(API_SERVER + "avatar/road_network/grid/create/?id=" + id, function (r) {
-        bootbox.hideAll();
-        bootbox.alert(r["grid_cell_count"] + " grid cells have been successfully created for \"" + city + "\" (" + id + ").");
-    }).fail(function () {
-        bootbox.hideAll();
-        bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while creating the grid system for \"" + city + "\" (" + id + ") !</span>");
+        title: "Create Grid",
+        message: "<p>Grid system (necessary for map-matching and other grid-based functions) of the following map(s) will be created:</p><p class='text-danger'>" + city + " (ID: " + id + ")</p>",
+        buttons: {
+            Proceed: function () {
+                bootbox.dialog({
+                    message: "<i class='fa fa-spinner'></i> Creating grid system, please be patient...",
+                    closeButton: false
+                });
+                $.get(API_SERVER + "avatar/road_network/grid/create/?id=" + id, function (r) {
+                    bootbox.hideAll();
+                    bootbox.alert(r["grid_cell_count"] + " grid cells have been successfully created.", function () {
+                        location.reload();
+                    });
+                }).fail(function () {
+                    bootbox.hideAll();
+                    bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while creating the grid system!</span>");
+                });
+            }
+        }
     });
 }
 
@@ -41,11 +52,41 @@ function delete_map(city, id) {
         message: "<p>The following map(s) will be deleted:</p><p class='text-danger'>" + city + " (ID: " + id + ")</p>",
         buttons: {
             Proceed: function () {
+                bootbox.dialog({
+                    message: "<i class='fa fa-spinner'></i> Deleting map, please be patient...",
+                    closeButton: false
+                });
                 $.get(API_SERVER + "avatar/road_network/remove/?id=" + id, function (r) {
                     location.reload();
+                }).fail(function () {
+                    bootbox.hideAll();
+                    bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while deleting the map!</span>");
                 });
             }
         }
     });
+}
 
+function clear_orphan(city, id) {
+    bootbox.dialog({
+        title: "Clear Orphan Roads",
+        message: "<p>The orphan roads (roads are not connected to any other roads) of the following map(s) will be deleted:</p><p class='text-danger'>" + city + " (ID: " + id + ")</p>",
+        buttons: {
+            Proceed: function () {
+                bootbox.dialog({
+                    message: "<i class='fa fa-spinner'></i> Clearing orphan roads, please be patient...",
+                    closeButton: false
+                });
+                $.get(API_SERVER + "avatar/road_network/clear_orphan/?id=" + id, function (r) {
+                    bootbox.hideAll();
+                    bootbox.alert(r["removed"] + " orphan roads have been successfully cleared.", function () {
+                        location.reload();
+                    });
+                }).fail(function () {
+                    bootbox.hideAll();
+                    bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while clearing orphan roads!</span>");
+                });
+            }
+        }
+    });
 }
