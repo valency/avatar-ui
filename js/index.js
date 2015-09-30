@@ -1,6 +1,11 @@
 var map = null;
 var traj = null;
 var trace = null;
+var trace_rendered = false;
+var path = null;
+var path_count = -1;
+var path_points = [];
+var path_rendered = false;
 var markers = [];
 
 $(document).ready(function () {
@@ -62,7 +67,17 @@ function search(trajid) {
         html += "</p>";
         $("#console").html(html);
         $('#search-id').prop("disabled", false);
-        plot();
+        // Clear out
+        trace_rendered = false;
+        path_rendered = false;
+        map.clearOverlays();
+        markers = [];
+        // Plot
+        if (traj.trace.p.length > 0) plot();
+        else {
+            bootbox.hideAll();
+            bootbox.alert("<span class='text-warning'><i class='fa fa-exclamation-triangle'></i> The trajectory you selected has no trace points.</span>");
+        }
     });
 }
 
@@ -71,55 +86,97 @@ function plot() {
         message: "<i class='fa fa-spinner'></i> Plotting, please be patient...",
         closeButton: false
     });
-    // Clear out
-    map.clearOverlays();
-    markers = [];
-    // Plot
+    // Plot trace
     for (var i = 0; i < traj.trace.p.length; i++) {
         var p = traj.trace.p[i];
         var point = new BMap.Point(p.p.lng, p.p.lat);
-        baidu_gps_convert(point, i);
+        baidu_gps_convert(point, i, "trace");
+    }
+    // Plot path
+    if (traj.path != null) {
+        path_count = 0;
+        path_points = [];
+        for (i = 0; i < traj.path.road.length; i++) {
+            path_count += traj.path.road[i].road.p.length;
+        }
+        var sequence = 0;
+        for (i = 0; i < traj.path.road.length; i++) {
+            for (var j = 0; j < traj.path.road[i].road.p.length; j++) {
+                p = traj.path.road[i].road.p[j];
+                point = new BMap.Point(p.lng, p.lat);
+                baidu_gps_convert(point, sequence, "path");
+                sequence++;
+            }
+        }
+    } else {
+        path_rendered = true;
     }
 }
 
-function baidu_gps_convert(point, sequence) {
+function baidu_gps_convert(point, sequence, callback) {
     $.ajax({
         url: "http://api.map.baidu.com/geoconv/v1/?coords=" + point.lng + "," + point.lat + "&ak=3juZrhGVW1FG9xSdspQHuSpU&output=json",
         dataType: 'jsonp',
         success: function (r) {
             if (r.status == 0) {
-                var marker = new BMap.Marker(new BMap.Point(r.result[0].x, r.result[0].y), {title: "Point " + sequence});
-                marker.addEventListener("click", function () {
-                    var msg = "<span class='bold'>ID: </span>" + traj.trace.p[sequence]["id"] + "<br/>";
-                    msg += "<span class='bold'>Time Stamp: </span>" + traj.trace.p[sequence]["t"] + "<br/>";
-                    msg += "<span class='bold'>Latitude : </span>" + traj.trace.p[sequence]["p"]["lat"] + "<br/>";
-                    msg += "<span class='bold'>Longitude: </span>" + traj.trace.p[sequence]["p"]["lng"] + "<br/>";
-                    msg += "<span class='bold'>On-Map Latitude : </span>" + this.getPosition().lat + "<br/>";
-                    msg += "<span class='bold'>On-Map Longitude: </span>" + this.getPosition().lng + "<br/>";
-                    msg += "<span class='bold'>Speed: </span>" + traj.trace.p[sequence]["speed"] + "<br/>";
-                    msg += "<span class='bold'>Angle: </span>" + traj.trace.p[sequence]["angle"] + "<br/>";
-                    msg += "<span class='bold'>Occupancy: </span>" + traj.trace.p[sequence]["occupy"];
-                    this.openInfoWindow(new BMap.InfoWindow(msg, {title: "<span class='bold text-danger'>Point " + sequence + "</span><hr/>"}));
-                });
-                markers[sequence] = marker;
-                map.addOverlay(marker);
-                var points = [];
-                if (markers.length == traj.trace.p.length) {
-                    for (var i = 0; i < markers.length; i++) {
-                        if (markers[i] == undefined) {
-                            return;
-                        } else {
-                            points.push(markers[i].getPosition())
+                var point = new BMap.Point(r.result[0].x, r.result[0].y);
+                if (callback == "trace") {
+                    var marker = new BMap.Marker(point, {title: "Point " + sequence});
+                    marker.addEventListener("click", function () {
+                        var msg = "<span class='bold'>ID: </span>" + traj.trace.p[sequence]["id"] + "<br/>";
+                        msg += "<span class='bold'>Time Stamp: </span>" + traj.trace.p[sequence]["t"] + "<br/>";
+                        msg += "<span class='bold'>Latitude : </span>" + traj.trace.p[sequence]["p"]["lat"] + "<br/>";
+                        msg += "<span class='bold'>Longitude: </span>" + traj.trace.p[sequence]["p"]["lng"] + "<br/>";
+                        msg += "<span class='bold'>On-Map Latitude : </span>" + this.getPosition().lat + "<br/>";
+                        msg += "<span class='bold'>On-Map Longitude: </span>" + this.getPosition().lng + "<br/>";
+                        msg += "<span class='bold'>Speed: </span>" + traj.trace.p[sequence]["speed"] + "<br/>";
+                        msg += "<span class='bold'>Angle: </span>" + traj.trace.p[sequence]["angle"] + "<br/>";
+                        msg += "<span class='bold'>Occupancy: </span>" + traj.trace.p[sequence]["occupy"];
+                        this.openInfoWindow(new BMap.InfoWindow(msg, {title: "<span class='bold text-danger'>Point " + sequence + "</span><hr/>"}));
+                    });
+                    markers[sequence] = marker;
+                    map.addOverlay(marker);
+                    if (markers.length == traj.trace.p.length) {
+                        var points = [];
+                        for (var i = 0; i < markers.length; i++) {
+                            if (markers[i] == undefined) {
+                                return;
+                            } else {
+                                points.push(markers[i].getPosition())
+                            }
+                        }
+                        trace = new BMap.Polyline(points, {
+                            strokeColor: "grey",
+                            strokeWeight: 5,
+                            strokeOpacity: 0.8
+                        });
+                        map.addOverlay(trace);
+                        trace_rendered = true;
+                        console.log("Trace has been rendered.");
+                        if (trace_rendered && path_rendered) {
+                            map.panTo(point);
+                            bootbox.hideAll();
                         }
                     }
-                    trace = new BMap.Polyline(points, {
-                        strokeColor: "blue",
-                        strokeWeight: 5,
-                        strokeOpacity: 0.8
-                    });
-                    map.addOverlay(trace);
-                    map.panTo(point);
-                    bootbox.hideAll();
+                } else if (callback == "path") {
+                    path_points[sequence] = point;
+                    if (path_points.length == path_count) {
+                        for (i = 0; i < path_count; i++) {
+                            if (path_points[i] == undefined) return;
+                        }
+                        path = new BMap.Polyline(path_points, {
+                            strokeColor: "blue",
+                            strokeWeight: 5,
+                            strokeOpacity: 0.8
+                        });
+                        map.addOverlay(path);
+                        path_rendered = true;
+                        console.log("Path has been rendered.");
+                        if (trace_rendered && path_rendered) {
+                            map.panTo(point);
+                            bootbox.hideAll();
+                        }
+                    }
                 }
             }
         },
