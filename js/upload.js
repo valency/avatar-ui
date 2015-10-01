@@ -3,10 +3,18 @@ $(document).ready(function () {
         dataType: 'json',
         acceptFileTypes: '/(\.|\/)(csv|txt)$/i',
         done: function (e, data) {
-            window.location.reload();
+            setTimeout(function () {
+                window.location.reload();
+            }, 1000);
+        },
+        progressall: function (e, data) {
+            $(".progress").show();
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $(".progress-bar").css('width', progress + '%');
         }
     });
 });
+
 function datafile_delete(file) {
     bootbox.dialog({
         title: "Delete Data",

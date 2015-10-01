@@ -17,11 +17,14 @@
                 <span class="bold">Map Data Required Headers:</span> roadid, partid, pointid, lng, lat
             </p>
 
-            <p>
+            <div class="progress" style="display:none;">
+                <div class="progress-bar" style="width:0;"></div>
+            </div>
+            <div>
                 <button class="btn btn-primary btn-xs" type="button" onclick="$('#file_upload').click();">Upload</button>
                 <input id="file_upload" class="hidden" type="file" name="files[]" data-url="./data/" multiple/>
                 <button class="btn btn-danger btn-xs" type="button" onclick="clear_db();">Clear Database</button>
-            </p>
+            </div>
             <hr/>
             <?php if ($handle = opendir('./data/')) {
                 while (false !== ($entry = readdir($handle))) {
