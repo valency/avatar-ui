@@ -7,6 +7,9 @@ var path_count = -1;
 var path_points = [];
 var path_rendered = false;
 var markers = [];
+var specific_road = null;
+var specific_road_points = [];
+var specific_road_count = -1;
 
 $(document).ready(function () {
     // Baidu map
@@ -73,11 +76,9 @@ function search(trajid) {
         map.clearOverlays();
         markers = [];
         // Plot
+        bootbox.hideAll();
         if (traj.trace.p.length > 0) plot();
-        else {
-            bootbox.hideAll();
-            bootbox.alert("<span class='text-warning'><i class='fa fa-exclamation-triangle'></i> The trajectory you selected has no trace points.</span>");
-        }
+        else bootbox.alert("<span class='text-warning'><i class='fa fa-exclamation-triangle'></i> The trajectory you selected has no trace points.</span>");
     });
 }
 
@@ -101,6 +102,15 @@ function plot() {
         }
         var sequence = 0;
         for (i = 0; i < traj.path.road.length; i++) {
+            // Check connection
+            if (i > 0) {
+                if (traj.path.road[i - 1].road.intersection[1].id == traj.path.road[i - 1].road.intersection[1].id) {
+                    traj.path.road[i].road.p.reverse();
+                } else if (traj.path.road[i - 1].road.intersection[1].id != traj.path.road[i - 1].road.intersection[0].id) {
+                    console.log("WARNING: Some roads within the path are not connected.");
+                }
+            }
+            // Added to point list
             for (var j = 0; j < traj.path.road[i].road.p.length; j++) {
                 p = traj.path.road[i].road.p[j];
                 point = new BMap.Point(p.lng, p.lat);
@@ -111,6 +121,18 @@ function plot() {
     } else {
         path_rendered = true;
     }
+}
+
+function render_road(road_id) {
+    $.get(API_SERVER + "avatar/road/get/?id=" + road_id, function (road) {
+        if (specific_road) map.removeOverlay(specific_road);
+        specific_road_points = [];
+        specific_road_count = road.p.length;
+        for (var i = 0; i < road.p.length; i++) {
+            var point = new BMap.Point(road.p[i].lng, road.p[i].lat);
+            baidu_gps_convert(point, i, "road");
+        }
+    });
 }
 
 function baidu_gps_convert(point, sequence, callback) {
@@ -132,7 +154,29 @@ function baidu_gps_convert(point, sequence, callback) {
                         msg += "<span class='bold'>Speed: </span>" + traj.trace.p[sequence]["speed"] + "<br/>";
                         msg += "<span class='bold'>Angle: </span>" + traj.trace.p[sequence]["angle"] + "<br/>";
                         msg += "<span class='bold'>Occupancy: </span>" + traj.trace.p[sequence]["occupy"];
-                        this.openInfoWindow(new BMap.InfoWindow(msg, {title: "<span class='bold text-danger'>Point " + sequence + "</span><hr/>"}));
+                        if (traj.path) {
+                            var flag = false;
+                            for (var i = 0; i < traj.path.road.length; i++) {
+                                if (traj.path.road[i].p) {
+                                    var point_sequences = traj.path.road[i].p.split(",");
+                                    for (var j = 0; j < point_sequences.length; j++) {
+                                        if (sequence == parseInt(point_sequences[j])) {
+                                            flag = true;
+                                            msg += "<br/><span class='bold'>Map-Matched Road: </span>" + traj.path.road[i].road.id;
+                                            render_road(traj.path.road[i].road.id);
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (flag) break;
+                            }
+                        }
+                        var info_window = new BMap.InfoWindow(msg, {title: "<span class='bold text-danger'>Point " + sequence + "</span><hr/>"});
+                        info_window.addEventListener("close", function () {
+                            if (specific_road) map.removeOverlay(specific_road);
+                            specific_road = null;
+                        });
+                        this.openInfoWindow(info_window);
                     });
                     markers[sequence] = marker;
                     map.addOverlay(marker);
@@ -176,6 +220,20 @@ function baidu_gps_convert(point, sequence, callback) {
                             map.panTo(point);
                             bootbox.hideAll();
                         }
+                    }
+                } else if (callback == "road") {
+                    specific_road_points[sequence] = point;
+                    if (specific_road_points.length == specific_road_count) {
+                        for (i = 0; i < specific_road_count; i++) {
+                            if (specific_road_points[i] == undefined) return;
+                        }
+                        specific_road = new BMap.Polyline(specific_road_points, {
+                            strokeColor: "orange",
+                            strokeWeight: 5,
+                            strokeOpacity: 1
+                        });
+                        map.addOverlay(specific_road);
+                        console.log("Requested road has been rendered.");
                     }
                 }
             }

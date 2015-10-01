@@ -1,5 +1,5 @@
 <?php
-$API_SERVER = "http://127.0.0.1:9001/";
+$API_SERVER = "http://nicpu3.cse.ust.hk:9001/";
 $DOMAIN = $_SERVER['HTTP_HOST'];
 $PROTOCOL = isset($_SERVER['HTTPS']) ? 'https://' : 'http://';
 
