@@ -1,12 +1,7 @@
 var map = null;
 var traj = null;
-var trace = null;
 var trace_rendered = false;
-var path = null;
-var path_count = -1;
-var path_points = [];
 var path_rendered = false;
-var markers = [];
 var specific_road = null;
 var specific_road_points = [];
 var specific_road_count = -1;
@@ -65,16 +60,13 @@ function search(trajid) {
         html += "<span class='label label-info'><i class='fa fa-taxi'></i> " + traj.taxi + "</span> ";
         html += "<span class='label label-info'><i class='fa fa-map-marker'></i> " + traj.trace.p.length + "</span> ";
         if (traj.path != null) html += "<span class='label label-info'><i class='fa fa-map-signs'></i> Map-Matched</span>";
-        html += "</p><p>";
-        //html += "<button class='btn btn-primary btn-xs' type='button' onclick='map_matching();'><i class='fa fa-globe'></i> Perform Map-Matching</button>";
         html += "</p>";
         $("#console").html(html);
         $('#search-id').prop("disabled", false);
         // Clear out
+        map.clearOverlays();
         trace_rendered = false;
         path_rendered = false;
-        map.clearOverlays();
-        markers = [];
         // Plot
         bootbox.hideAll();
         if (traj.trace.p.length > 0) plot();
@@ -97,36 +89,12 @@ function plot() {
         baidu_gps_convert(point, i, "trace");
     }
     // Plot path
-    if (traj.path != null) {
-        path_count = 0;
-        path_points = [];
+    if (traj.path) {
         for (i = 0; i < traj.path.road.length; i++) {
-            path_count += traj.path.road[i].road.p.length;
-        }
-        var sequence = 0;
-        // Determine direction
-        if (traj.path.road.length > 1) {
-            if (traj.path.road[0].road.intersection[0].id == traj.path.road[1].road.intersection[0].id || traj.path.road[0].road.intersection[0].id == traj.path.road[1].road.intersection[1].id) {
-                traj.path.road[0].road.p.reverse();
-                traj.path.road[0].road.intersection.reverse();
-            }
-        }
-        for (i = 0; i < traj.path.road.length; i++) {
-            // Check connection
-            if (i > 0) {
-                if (traj.path.road[i - 1].road.intersection[1].id == traj.path.road[i].road.intersection[1].id) {
-                    traj.path.road[i].road.p.reverse();
-                    traj.path.road[i].road.intersection.reverse();
-                } else if (traj.path.road[i - 1].road.intersection[1].id != traj.path.road[i].road.intersection[0].id) {
-                    console.log("WARNING: Some roads within the path are not connected.");
-                }
-            }
-            // Added to point list
             for (var j = 0; j < traj.path.road[i].road.p.length; j++) {
                 p = traj.path.road[i].road.p[j];
                 point = new BMap.Point(p.lng, p.lat);
-                baidu_gps_convert(point, sequence, "path");
-                sequence++;
+                baidu_gps_convert(point, j, "path", i);
             }
         }
     } else {
@@ -146,7 +114,7 @@ function render_road(road_id) {
     });
 }
 
-function baidu_gps_convert(point, sequence, callback) {
+function baidu_gps_convert(point, sequence, callback, road_sequence) {
     $.ajax({
         url: "http://api.map.baidu.com/geoconv/v1/?coords=" + point.lng + "," + point.lat + "&ak=3juZrhGVW1FG9xSdspQHuSpU&output=json",
         dataType: 'jsonp',
@@ -189,48 +157,60 @@ function baidu_gps_convert(point, sequence, callback) {
                         });
                         this.openInfoWindow(info_window);
                     });
-                    markers[sequence] = marker;
+                    traj["trace"]["p"][sequence]["marker"] = marker;
                     map.addOverlay(marker);
-                    if (markers.length == traj.trace.p.length) {
-                        var points = [];
-                        for (var i = 0; i < markers.length; i++) {
-                            if (markers[i] == undefined) {
-                                return;
-                            } else {
-                                points.push(markers[i].getPosition())
-                            }
-                        }
-                        trace = new BMap.Polyline(points, {
-                            strokeColor: "grey",
-                            strokeWeight: 5,
-                            strokeOpacity: 0.8
-                        });
-                        map.addOverlay(trace);
-                        trace_rendered = true;
-                        console.log("Trace has been rendered.");
-                        if (trace_rendered && path_rendered) {
-                            map.panTo(point);
-                            bootbox.hideAll();
+                    // Check whether all points are rendered
+                    var points = [];
+                    for (var i = 0; i < traj["trace"]["p"].length; i++) {
+                        var m = traj["trace"]["p"][i]["marker"];
+                        if (m == undefined || m == null) {
+                            return;
+                        } else {
+                            points.push(m.getPosition())
                         }
                     }
+                    traj["trace"]["object"] = new BMap.Polyline(points, {
+                        strokeColor: "grey",
+                        strokeWeight: 3,
+                        strokeOpacity: 0.8,
+                        strokeStyle: "dashed"
+                    });
+                    map.addOverlay(traj["trace"]["object"]);
+                    trace_rendered = true;
+                    console.log("Trace has been rendered.");
+                    if (trace_rendered && path_rendered) {
+                        map.panTo(point);
+                        bootbox.hideAll();
+                    }
                 } else if (callback == "path") {
-                    path_points[sequence] = point;
-                    if (path_points.length == path_count) {
-                        for (i = 0; i < path_count; i++) {
-                            if (path_points[i] == undefined) return;
+                    traj["path"]["road"][road_sequence]["road"]["p"][sequence]["point"] = point;
+                    // Check whether all points are rendered
+                    points = [];
+                    for (i = 0; i < traj["path"]["road"][road_sequence]["road"]["p"].length; i++) {
+                        m = traj["path"]["road"][road_sequence]["road"]["p"][i]["point"];
+                        if (m == undefined || m == null) {
+                            return;
+                        } else {
+                            points.push(m)
                         }
-                        path = new BMap.Polyline(path_points, {
-                            strokeColor: "blue",
-                            strokeWeight: 5,
-                            strokeOpacity: 0.8
-                        });
-                        map.addOverlay(path);
-                        path_rendered = true;
-                        console.log("Path has been rendered.");
-                        if (trace_rendered && path_rendered) {
-                            map.panTo(point);
-                            bootbox.hideAll();
+                    }
+                    traj["path"]["road"][road_sequence]["object"] = new BMap.Polyline(points, {
+                        strokeColor: "blue",
+                        strokeWeight: 5,
+                        strokeOpacity: 0.8
+                    });
+                    map.addOverlay(traj["path"]["road"][road_sequence]["object"]);
+                    // Check whether all roads of path are rendered
+                    for (i = 0; i < traj["path"]["road"].length; i++) {
+                        if (traj["path"]["road"][i]["object"] == undefined || traj["path"]["road"][i]["object"] == null) {
+                            return;
                         }
+                    }
+                    path_rendered = true;
+                    console.log("Path has been rendered.");
+                    if (trace_rendered && path_rendered) {
+                        map.panTo(point);
+                        bootbox.hideAll();
                     }
                 } else if (callback == "road") {
                     specific_road_points[sequence] = point;
