@@ -79,6 +79,9 @@ function search(trajid) {
         bootbox.hideAll();
         if (traj.trace.p.length > 0) plot();
         else bootbox.alert("<span class='text-warning'><i class='fa fa-exclamation-triangle'></i> The trajectory you selected has no trace points.</span>");
+    }).fail(function () {
+        bootbox.hideAll();
+        bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while loading trajectory: " + trajid + " !</span>");
     });
 }
 
@@ -101,12 +104,20 @@ function plot() {
             path_count += traj.path.road[i].road.p.length;
         }
         var sequence = 0;
+        // Determine direction
+        if (traj.path.road.length > 1) {
+            if (traj.path.road[0].road.intersection[0].id == traj.path.road[1].road.intersection[0].id || traj.path.road[0].road.intersection[0].id == traj.path.road[1].road.intersection[1].id) {
+                traj.path.road[0].road.p.reverse();
+                traj.path.road[0].road.intersection.reverse();
+            }
+        }
         for (i = 0; i < traj.path.road.length; i++) {
             // Check connection
             if (i > 0) {
-                if (traj.path.road[i - 1].road.intersection[1].id == traj.path.road[i - 1].road.intersection[1].id) {
+                if (traj.path.road[i - 1].road.intersection[1].id == traj.path.road[i].road.intersection[1].id) {
                     traj.path.road[i].road.p.reverse();
-                } else if (traj.path.road[i - 1].road.intersection[1].id != traj.path.road[i - 1].road.intersection[0].id) {
+                    traj.path.road[i].road.intersection.reverse();
+                } else if (traj.path.road[i - 1].road.intersection[1].id != traj.path.road[i].road.intersection[0].id) {
                     console.log("WARNING: Some roads within the path are not connected.");
                 }
             }

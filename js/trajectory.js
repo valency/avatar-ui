@@ -31,6 +31,8 @@ function load_traj(id) {
         html += "<span class='bold'>Trace ID: </span> " + traj.trace.id + "</span><br/>";
         html += "<span class='bold'>Path ID: </span> " + (traj.path ? traj.path.id : "null") + "</span><br/>";
         html += "<span class='bold'># of Sample Points: </span> " + traj.trace.p.length + "</span><br/>";
+        html += "<span class='bold'>Start Time: </span> " + traj.trace.p[0].t + "</span><br/>";
+        html += "<span class='bold'>End Time: </span> " + traj.trace.p[traj.trace.p.length - 1].t + "</span><br/>";
         bootbox.hideAll();
         $("#traj_detail_" + id).html(html);
     }).fail(function () {
