@@ -5,6 +5,9 @@ var path_rendered = false;
 var specific_road = null;
 var specific_road_points = [];
 var specific_road_count = -1;
+var candidate_roads = null;
+var drag_marker_position = null;
+var drag_road = null;
 
 $(document).ready(function () {
     // Baidu map
@@ -114,6 +117,19 @@ function render_road(road_id) {
     });
 }
 
+function render_candidate_road(count, road_id) {
+    $.get(API_SERVER + "avatar/road/get/?id=" + road_id, function (road) {
+        candidate_roads[count] = {
+            points: [],
+            count: road.p.length
+        };
+        for (var i = 0; i < road.p.length; i++) {
+            var point = new BMap.Point(road.p[i].lng, road.p[i].lat);
+            baidu_gps_convert(point, i, "candidate", count);
+        }
+    });
+}
+
 function baidu_gps_convert(point, sequence, callback, road_sequence) {
     $.ajax({
         url: "http://api.map.baidu.com/geoconv/v1/?coords=" + point.lng + "," + point.lat + "&ak=3juZrhGVW1FG9xSdspQHuSpU&output=json",
@@ -122,7 +138,10 @@ function baidu_gps_convert(point, sequence, callback, road_sequence) {
             if (r.status == 0) {
                 var point = new BMap.Point(r.result[0].x, r.result[0].y);
                 if (callback == "trace") {
-                    var marker = new BMap.Marker(point, {title: "Point " + sequence});
+                    var marker = new BMap.Marker(point, {
+                        title: "Point " + sequence,
+                        enableDragging: true
+                    });
                     marker.addEventListener("click", function () {
                         var msg = "<span class='bold'>ID: </span>" + traj.trace.p[sequence]["id"] + "<br/>";
                         msg += "<span class='bold'>Time Stamp: </span>" + traj.trace.p[sequence]["t"] + "<br/>";
@@ -156,6 +175,67 @@ function baidu_gps_convert(point, sequence, callback, road_sequence) {
                             specific_road = null;
                         });
                         this.openInfoWindow(info_window);
+                    });
+                    marker.addEventListener("dragstart", function (type, target) {
+                        // Draw current road
+                        var flag = false;
+                        for (var i = 0; i < traj.path.road.length; i++) {
+                            if (traj.path.road[i].p) {
+                                var point_sequences = traj.path.road[i].p.split(",");
+                                for (var j = 0; j < point_sequences.length; j++) {
+                                    if (sequence == parseInt(point_sequences[j])) {
+                                        flag = true;
+                                        render_road(traj.path.road[i].road.id);
+                                        break;
+                                    }
+                                }
+                            }
+                            if (flag) break;
+                        }
+                        // Draw candidate roads
+                        candidate_roads = [];
+                        $.get(API_SERVER + "avatar/map-matching/find_candidates/?city=" + $("#search-city").val() + "&lat=" + traj.trace.p[sequence]["p"]["lat"] + "&lng=" + traj.trace.p[sequence]["p"]["lng"], function (candidates) {
+                            for (var i = 0; i < Math.min(10, candidates.length); i++) {
+                                render_candidate_road(i, candidates[i]);
+                            }
+                        });
+                        // Remember current position
+                        drag_marker_position = this.getPosition();
+                        // Init target road object
+                        drag_road = {rendered: true};
+                    });
+                    marker.addEventListener("dragging", function (type, target, pixel, point) {
+                        if (drag_road["rendered"]) {
+                            drag_road = {
+                                rendered: false,
+                                id: null,
+                                count: -1,
+                                points: []
+                            };
+                            $.get(API_SERVER + "avatar/map-matching/find_candidates/?city=" + $("#search-city").val() + "&lat=" + this.getPosition().lat + "&lng=" + this.getPosition().lng, function (candidates) {
+                                drag_road["id"] = candidates[0];
+                                $.get(API_SERVER + "avatar/road/get/?id=" + drag_road["id"], function (road) {
+                                    drag_road["count"] = road.p.length;
+                                    drag_road["points"] = [];
+                                    for (var i = 0; i < road.p.length; i++) {
+                                        var point = new BMap.Point(road.p[i].lng, road.p[i].lat);
+                                        baidu_gps_convert(point, i, "drag");
+                                    }
+                                });
+                            });
+                        }
+                    });
+                    marker.addEventListener("dragend", function (type, target, pixel, point) {
+                        // Clean up target road
+                        if (drag_road["road"]) map.removeOverlay(drag_road["road"]);
+                        // Clean up all candidate roads
+                        for (var i = 0; i < candidate_roads.length; i++) {
+                            var road = candidate_roads[i]["road"];
+                            if (road) map.removeOverlay(road);
+                        }
+                        candidate_roads = [];
+                        // Push back to original position
+                        this.setPosition(drag_marker_position);
                     });
                     traj["trace"]["p"][sequence]["marker"] = marker;
                     map.addOverlay(marker);
@@ -196,7 +276,7 @@ function baidu_gps_convert(point, sequence, callback, road_sequence) {
                     }
                     traj["path"]["road"][road_sequence]["object"] = new BMap.Polyline(points, {
                         strokeColor: "blue",
-                        strokeWeight: 5,
+                        strokeWeight: 3,
                         strokeOpacity: 0.8
                     });
                     map.addOverlay(traj["path"]["road"][road_sequence]["object"]);
@@ -220,11 +300,40 @@ function baidu_gps_convert(point, sequence, callback, road_sequence) {
                         }
                         specific_road = new BMap.Polyline(specific_road_points, {
                             strokeColor: "orange",
-                            strokeWeight: 5,
+                            strokeWeight: 3,
                             strokeOpacity: 1
                         });
                         map.addOverlay(specific_road);
                         console.log("Requested road has been rendered.");
+                    }
+                } else if (callback == "candidate") {
+                    candidate_roads[road_sequence]["points"][sequence] = point;
+                    if (candidate_roads[road_sequence]["points"].length == candidate_roads[road_sequence]["count"]) {
+                        for (i = 0; i < candidate_roads[road_sequence]["count"]; i++) {
+                            if (candidate_roads[road_sequence]["points"][i] == undefined) return;
+                        }
+                        candidate_roads[road_sequence]["road"] = new BMap.Polyline(candidate_roads[road_sequence]["points"], {
+                            strokeColor: "red",
+                            strokeWeight: 3,
+                            strokeOpacity: 0.8
+                        });
+                        map.addOverlay(candidate_roads[road_sequence]["road"]);
+                        console.log("Candidate road " + road_sequence + " has been rendered.");
+                    }
+                } else if (callback == "drag") {
+                    drag_road["points"][sequence] = point;
+                    if (drag_road["points"].length == drag_road["count"]) {
+                        for (i = 0; i < drag_road["count"]; i++) {
+                            if (drag_road["points"][i] == undefined) return;
+                        }
+                        drag_road["road"] = new BMap.Polyline(drag_road["points"], {
+                            strokeColor: "pink",
+                            strokeWeight: 5,
+                            strokeOpacity: 1
+                        });
+                        map.addOverlay(drag_road["road"]);
+                        drag_road["rendered"] = true;
+                        console.log("Target road id = " + drag_road["id"] + " has been rendered.");
                     }
                 }
             }
