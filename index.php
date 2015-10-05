@@ -27,7 +27,16 @@
         </div>
     </div>
     <hr/>
-    <div class="form-group" style="margin-bottom:0;text-align:center;">
+    <div class="row" id="user-form">
+        <div class="col-md-6 form-group">
+            <input id="username" class="form-control input-sm" placeholder="Username"/>
+        </div>
+        <div class="col-md-6 form-group">
+            <input id="password" class="form-control input-sm" placeholder="Password" type="password" autocomplete="off"/>
+        </div>
+    </div>
+    <hr/>
+    <div class="form-group">
         <input id="search-range"/>
         <select id="search-city" class="form-control input-sm"></select>
         <input id="search-id" class="form-control input-sm" placeholder="Trajectory ID"/>

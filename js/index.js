@@ -18,6 +18,26 @@ $(document).ready(function () {
     map.addControl(new BMap.OverviewMapControl());
     map.addControl(new BMap.MapTypeControl());
     map.centerAndZoom(new BMap.Point(116.404, 39.915), 15);
+    // Login
+    var username = check_login();
+    if (username) {
+        var html = "<div class='col-md-6'><span><i class='fa fa-user'></i> " + username + "</span></div>";
+        html += "<div class='col-md-6'><a href='javascript:void(0)' onclick='logout();location.reload();' class='pull-right'><i class='fa fa-sign-out'></i> Logout</a></div>";
+        $("#user-form").html(html);
+    } else {
+        $('#username').on('keyup', function (e) {
+            if (e.which == 13) {
+                e.preventDefault();
+                login_or_register($("#username").val(), $("#password").val());
+            }
+        });
+        $('#password').on('keyup', function (e) {
+            if (e.which == 13) {
+                e.preventDefault();
+                login_or_register($("#username").val(), $("#password").val());
+            }
+        });
+    }
     // Search button
     $.get(API_SERVER + "avatar/traj/get_all/", function (data) {
         $("#search-id").typeahead({source: data.ids});

@@ -13,4 +13,6 @@
 <script src="lib/bootstrap3-typeahead.min.js"></script>
 <script src="lib/bootbox.min.js"></script>
 <script src="lib/moment.js"></script>
+<script src="lib/cryptojs-3.1.2/rollups/md5.js"></script>
+<script src="lib/jquery.cookie.js"></script>
 <script src="js/common.js"></script>
