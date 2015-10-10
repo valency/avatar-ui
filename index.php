@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="lib/ion.rangeslider-2.0.13/css/ion.rangeSlider.css"/>
     <link rel="stylesheet" href="lib/ion.rangeslider-2.0.13/css/ion.rangeSlider.skinFlat.css"/>
     <link rel="stylesheet" href="css/index.css"/>
-    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.5&ak=3juZrhGVW1FG9xSdspQHuSpU"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAIVyPOw3xUIfL1g1sCXq3DQqf8XnTjIZM"></script>
     <script type="text/javascript" src="lib/ion.rangeslider-2.0.13/js/ion-rangeSlider/ion.rangeSlider.min.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
 </head>
