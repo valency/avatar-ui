@@ -13,6 +13,7 @@ $(document).ready(function () {
             html += "<span class='bold'>Max Point of Map: </span><span>" + r[i].pmax.lat + ", " + r[i].pmax.lng + "</span><br/>";
             html += "<span class='bold'>Min Point of Map: </span><span>" + r[i].pmin.lat + ", " + r[i].pmin.lng + "</span><br/>";
             html += "<a href='javascript:void(0)' onclick=\"create_grid('" + r[i].city + "','" + r[i].id + "')\">Create Grid</a> | ";
+            html += "<a href='javascript:void(0)' onclick=\"create_graph('" + r[i].city + "','" + r[i].id + "')\">Create Graph Model</a> | ";
             html += "<a href='javascript:void(0)' onclick=\"clear_orphan('" + r[i].city + "','" + r[i].id + "')\">Clear Orphan Roads</a> | ";
             html += "<a href='javascript:void(0)' onclick=\"delete_map('" + r[i].city + "','" + r[i].id + "')\" class='text-danger'>Delete</a>";
             html += "</p>";
@@ -40,6 +41,30 @@ function create_grid(city, id) {
                 }).fail(function () {
                     bootbox.hideAll();
                     bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while creating the grid system!</span>");
+                });
+            }
+        }
+    });
+}
+
+function create_graph(city, id) {
+    bootbox.dialog({
+        title: "Create Graph Model",
+        message: "<p>Graph model (necessary for map-matching and some other functions) of the following map(s) will be created:</p><p class='text-danger'>" + city + " (ID: " + id + ")</p>",
+        buttons: {
+            Proceed: function () {
+                bootbox.dialog({
+                    message: "<i class='fa fa-spinner'></i> Creating graph model, please be patient...",
+                    closeButton: false
+                });
+                $.get(API_SERVER + "avatar/road_network/graph/create/?id=" + id, function (r) {
+                    bootbox.hideAll();
+                    bootbox.alert("Graph model has been successfully created.", function () {
+                        location.reload();
+                    });
+                }).fail(function () {
+                    bootbox.hideAll();
+                    bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while creating the graph model!</span>");
                 });
             }
         }
