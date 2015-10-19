@@ -27,6 +27,7 @@ $(document).ready(function () {
         var html = "<div class='col-md-6'><span><i class='fa fa-user'></i> " + username + "</span></div>";
         html += "<div class='col-md-6'><a href='javascript:void(0)' onclick='logout();location.reload();' class='pull-right'><i class='fa fa-sign-out'></i> Logout</a></div>";
         $("#user-form").html(html);
+        $("#traj-form").removeClass("hidden");
     } else {
         $('#username').on('keyup', function (e) {
             if (e.which == 13) {
@@ -226,6 +227,9 @@ function plot() {
                 }
             });
             p["marker"].addListener("dragend", function (type, target, pixel, point) {
+                var sequence = this.title;
+                var p = traj["trace"]["p"][sequence];
+                // Stop dragging flag
                 dragging = false;
                 // Clean up previous road
                 if (map_matched_road) map_matched_road.setMap(null);
@@ -237,6 +241,19 @@ function plot() {
                 }
                 // Push back to original position
                 this.setPosition(drag_marker_position);
+                // Re-perform map-matching
+                console.log("Trying to re-perform map-matching via: id = " + traj["id"] + ", pid = " + p["id"] + ", rid = " + drag_road["id"] + ", uid = " + $.cookie('avatar_id'));
+                bootbox.dialog({
+                    message: "<i class='fa fa-spinner'></i> Performing map-matching, please be patient...",
+                    closeButton: false
+                });
+                $.get(API_SERVER + "avatar/map-matching/perform_with_label/?city=" + $("#search-city").val() + "+&id=" + traj["id"] + "&pid=" + p["id"] + "&rid=" + drag_road["id"] + "&uid=" + $.cookie('avatar_id'), function (data) {
+                    bootbox.hideAll();
+                    search(traj["id"]);
+                }).fail(function () {
+                    bootbox.hideAll();
+                    bootbox.alert("<span class='text-danger'><i class='fa fa-exclamation-triangle'></i> Something is wrong during map-matching!</span>");
+                });
             });
         }
     }

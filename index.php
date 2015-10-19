@@ -36,7 +36,7 @@
         </div>
     </div>
     <hr/>
-    <div class="form-group">
+    <div class="form-group hidden" id="traj-form">
         <input id="search-range"/>
         <select id="search-city" class="form-control input-sm"></select>
         <input id="search-id" class="form-control input-sm" placeholder="Trajectory ID"/>
