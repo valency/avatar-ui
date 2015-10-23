@@ -102,8 +102,8 @@ function search(trajid) {
     var search_range = $("#search-range").val().split(";");
     $.get(API_SERVER + "avatar/traj/get/?id=" + trajid + "&ts=" + moment().startOf('day').seconds(search_range[0]).format('HH:mm:ss') + "&td=" + moment().startOf('day').seconds(search_range[1]).format('HH:mm:ss'), function (data) {
         traj = data;
-        var html = "<p><span class='bold text-success'>" + traj.id + "</span><br/>";
-        html += "<span class='label label-info'><i class='fa fa-taxi'></i> " + traj.taxi + "</span> ";
+        var html = "<p><span class='bold text-success'>" + traj.id + "</span></p>";
+        html += "<p style='line-height:3em;'><span class='label label-info'><i class='fa fa-taxi'></i> " + traj.taxi + "</span> ";
         html += "<span class='label label-info'><i class='fa fa-map-marker'></i> " + traj.trace.p.length + "</span> ";
         if (traj.path != null) html += "<span class='label label-info'><i class='fa fa-map-signs'></i> Map-Matched</span>";
         html += "</p>";

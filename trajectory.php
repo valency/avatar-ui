@@ -12,11 +12,11 @@
     <div class="page-content-wrapper">
         <div class="page-content">
             <legend style="color:green;">Trajectory Management <span style="color:grey;font-size:9px;">v0.<?php echo date("n.j", filemtime("./trajectory.php")); ?></span></legend>
+            <p><select id="search-city" class="form-control input-sm"></select></p>
+
             <p>
-                <select id="search-city" class="form-control input-sm"></select>
-<!--                <button class="btn btn-primary btn-xs" type="button" onclick="$('#file_upload').click();">Upload</button>-->
-<!--                <input id="file_upload" class="hidden" type="file" name="files[]" data-url="./data/" multiple/>-->
-<!--                <button class="btn btn-danger btn-xs" type="button" onclick="clear_db();">Clear Database</button>-->
+                <button class="btn btn-primary btn-xs" type="button" onclick="generate_traj();">Generate Synthetic Trajectories</button>
+                <button class="btn btn-danger btn-xs" type="button" onclick="clear_db();">Delete All Trajectories</button>
             </p>
             <hr/>
             <div id="traj-list-container">

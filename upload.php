@@ -23,7 +23,6 @@
             <div>
                 <button class="btn btn-primary btn-xs" type="button" onclick="$('#file_upload').click();">Upload</button>
                 <input id="file_upload" class="hidden" type="file" name="files[]" data-url="./data/" multiple/>
-                <button class="btn btn-danger btn-xs" type="button" onclick="clear_db();">Clear Database</button>
             </div>
             <hr/>
             <?php if ($handle = opendir('./data/')) {

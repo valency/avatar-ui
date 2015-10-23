@@ -108,3 +108,45 @@ function delete_traj(id) {
     });
 
 }
+
+function clear_db() {
+    bootbox.confirm("Are you sure you would like to delete all the trajectories in the database?", function (confirmed) {
+        if (confirmed) {
+            bootbox.hideAll();
+            bootbox.dialog({
+                message: "<i class='fa fa-spinner'></i> Deleting all trajectories, please be patient...",
+                closeButton: false
+            });
+            $.get(API_SERVER + "avatar/traj/remove_all/", function (r) {
+                bootbox.hideAll();
+                bootbox.alert("All trajectories have been successfully deleted.", function () {
+                    location.reload();
+                });
+            }).fail(function () {
+                bootbox.hideAll();
+                bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while processing the file!</span>");
+            });
+        }
+    });
+}
+
+function generate_traj() {
+    bootbox.confirm("prepare to generate", function (confirmed) {
+        if (confirmed) {
+            bootbox.hideAll();
+            bootbox.dialog({
+                message: "<i class='fa fa-spinner'></i> Generating synthetic trajectories, please be patient...",
+                closeButton: false
+            });
+            $.get(API_SERVER + "avatar/simulator/generate_syn_traj/?city=" + $("#search-city").val() + "&traj=1&point=10", function (r) {
+                bootbox.hideAll();
+                bootbox.alert("Requested trajectories have been successfully generated.", function () {
+                    location.reload();
+                });
+            }).fail(function () {
+                bootbox.hideAll();
+                bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while generating synthetic trajectories!</span>");
+            });
+        }
+    });
+}
