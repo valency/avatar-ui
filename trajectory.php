@@ -11,7 +11,7 @@
 <div class="page-container">
     <div class="page-content-wrapper">
         <div class="page-content">
-            <legend style="color:green;">Trajectory Management <span style="color:grey;font-size:9px;">v0.<?php echo date("n.j", filemtime("./trajectory.php")); ?></span></legend>
+            <legend class="text-success">Trajectory Management <span class="version">v0.<?php echo date("n.j", filemtime("./trajectory.php")); ?></span></legend>
             <p><select id="search-city" class="form-control input-sm"></select></p>
 
             <p>

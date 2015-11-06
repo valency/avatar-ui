@@ -3,10 +3,36 @@ html {
 }
 
 body {
-    font-family: 'WOL_Reg', 'Segoe UI', Tahoma, Helvetica, sans-serif;
-    font-size: 12px;
     margin: 0;
     padding: 20px;
+}
+
+body, table, select {
+    font-family: 'WOL_Reg', 'Segoe UI', Tahoma, Helvetica, sans-serif;
+    font-size: 12px;
+}
+
+input, select {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    -webkit-appearance: none;
+    -webkit-box-shadow: inset 0 -1px 0 #ddd;
+    box-shadow: inset 0 -1px 0 #ddd;
+}
+
+span {
+    vertical-align: bottom;
+}
+
+.version {
+    font-size: 10px;
+    color: grey;
+}
+
+legend .version {
+    line-height: 5em;
+    float: right;
 }
 
 .text-grey {
@@ -43,4 +69,12 @@ body {
 
 .pointer {
     cursor: pointer;
+}
+
+.logo {
+    height: 2em;
+}
+
+.dataTables_length label select {
+    padding-right: 10px;
 }

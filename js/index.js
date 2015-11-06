@@ -247,7 +247,7 @@ function plot() {
                     message: "<i class='fa fa-spinner'></i> Performing map-matching, please be patient...",
                     closeButton: false
                 });
-                $.get(API_SERVER + "avatar/map-matching/perform_with_label/?city=" + $("#search-city").val() + "+&id=" + traj["id"] + "&pid=" + p["id"] + "&rid=" + drag_road["id"] + "&uid=" + $.cookie('avatar_id'), function (data) {
+                $.get(API_SERVER + "avatar/map-matching/perform_with_label/?city=" + $("#search-city").val() + "&id=" + traj["id"] + "&pid=" + p["id"] + "&rid=" + drag_road["id"] + "&uid=" + $.cookie('avatar_id'), function (data) {
                     bootbox.hideAll();
                     search(traj["id"]);
                 }).fail(function () {
