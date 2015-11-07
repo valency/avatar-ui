@@ -7,7 +7,7 @@ body {
     padding: 20px;
 }
 
-body, table, select {
+body, table, select, ul, ol, li {
     font-family: 'WOL_Reg', 'Segoe UI', Tahoma, Helvetica, sans-serif;
     font-size: 12px;
 }

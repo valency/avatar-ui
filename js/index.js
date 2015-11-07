@@ -59,18 +59,6 @@ $(document).ready(function () {
             }, 1000);
         }
     });
-    // Time range slider
-    $("#search-range").ionRangeSlider({
-        type: "double",
-        min: 0,
-        max: 24 * 3600 - 1,
-        // from: 12 * 3600,
-        // to: 13 * 3600,
-        grid: true,
-        prettify: function (n) {
-            return moment().startOf('day').seconds(n).format('HH:mm');
-        }
-    });
     // City selector
     $.get(API_SERVER + "avatar/road_network/get_all/", function (data) {
         for (var i = 0; i < data.length; i++) {
@@ -99,20 +87,17 @@ function search(trajid) {
         }
     }
     // Load data
-    var search_range = $("#search-range").val().split(";");
-    $.get(API_SERVER + "avatar/traj/get/?id=" + trajid + "&ts=" + moment().startOf('day').seconds(search_range[0]).format('HH:mm:ss') + "&td=" + moment().startOf('day').seconds(search_range[1]).format('HH:mm:ss'), function (data) {
+    $.get(API_SERVER + "avatar/traj/get/?id=" + trajid, function (data) {
         traj = data;
-        var html = "<p><span class='bold text-success'>" + traj.id + "</span></p>";
-        html += "<p style='line-height:3em;'><span class='label label-info'><i class='fa fa-taxi'></i> " + traj.taxi + "</span> ";
-        html += "<span class='label label-info'><i class='fa fa-map-marker'></i> " + traj.trace.p.length + "</span> ";
-        if (traj.path != null) html += "<span class='label label-info'><i class='fa fa-map-signs'></i> Map-Matched</span>";
-        html += "</p>";
+        var html = "<p><span class='label label-info'><i class='fa fa-taxi'></i> " + traj.taxi + "</span></p>";
+        html += "<p><span class='label label-info'><i class='fa fa-map-marker'></i> " + traj.trace.p.length + "</span></p>";
+        if (traj.path != null) html += "<p><span class='label label-info'><i class='fa fa-map-signs'></i> Map-Matched</span></p>";
         $("#console").html(html);
         $('#search-id').prop("disabled", false);
         // Plot
         bootbox.hideAll();
         if (traj.trace.p.length > 0) plot();
-        else bootbox.alert("<span class='text-warning'><i class='fa fa-exclamation-triangle'></i> The trajectory has no trace points during the time period.</span>");
+        else bootbox.alert("<span class='text-warning'><i class='fa fa-exclamation-triangle'></i> The requested trajectory has no trace points.</span>");
     }).fail(function () {
         bootbox.hideAll();
         bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while loading trajectory: " + trajid + " !</span>");

@@ -26,7 +26,7 @@
         </div>
         <div class="tab-pane" id="data-management">
             <div>
-                <button class="btn btn-primary btn-xs" type="button" onclick="$('#file_upload').click();"><i class="fa fa-upload"></i> Upload New Map</button>
+                <button class="btn btn-primary btn-xs" type="button" onclick="$('#file_upload').click();"><i class="fa fa-upload"></i> Upload New Map Data</button>
                 <input id="file_upload" class="hidden" type="file" name="files[]" data-url="./data/map/" multiple/>
                 <span class="bold" style="margin-left:10px;">CSV Format, Required Headers:</span> <code>roadid</code>, <code>partid</code>, <code>pointid</code>, <code>lng</code>, <code>lat</code>
             </div>
@@ -52,7 +52,7 @@
                             echo "<td>" . date("Y-m-d H:i:s", filemtime('./data/map/' . $entry)) . "</td>";
                             echo "<td>" . number_format(filesize('./data/map/' . $entry)) . "</td>";
                             echo "<td>";
-                            echo "<a href='javascript:void(0)' onclick=\"map_file_import('" . $entry . "')\">Import as Map</a> | ";
+                            echo "<a href='javascript:void(0)' onclick=\"map_file_import('" . $entry . "')\">Import</a> | ";
                             echo "<a href='javascript:void(0)' onclick=\"map_file_delete('" . $entry . "')\" class='text-danger'>Delete</a>";
                             echo "</td>";
                             echo "</tr>";

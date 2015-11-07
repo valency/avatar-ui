@@ -37,7 +37,6 @@ $(document).ready(function () {
         }
     });
     $('#maps-table').DataTable();
-    $(".dataTables_paginate>span>.current").removeClass("paginate_button");
 });
 
 
@@ -172,5 +171,4 @@ function map_file_import(file) {
             });
         }
     });
-
 }
