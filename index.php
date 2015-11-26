@@ -1,6 +1,6 @@
 <html>
 <head>
-    <?php require "php/lib.php"; ?>
+    <?php require "lib.php"; ?>
     <title>The Avatar System</title>
     <link rel="stylesheet" href="css/index.css"/>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAIVyPOw3xUIfL1g1sCXq3DQqf8XnTjIZM"></script>

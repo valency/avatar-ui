@@ -14,7 +14,8 @@ $(document).ready(function () {
         }
     });
     $.get(API_SERVER + "avatar/road_network/get_all/", function (r) {
-        $("#map-list-container").html("");
+        if (r.length <= 0)  $("#map-list-container").html("No maps available.");
+        else $("#map-list-container").html("");
         for (var i = 0; i < r.length; i++) {
             var html = "";
             if (i > 0) html += "<hr/>";
@@ -28,9 +29,9 @@ $(document).ready(function () {
             html += "<span class='bold'># of Grid Cells on Longitude: </span><span>" + r[i].grid_lng_count + "</span><br/>";
             html += "<span class='bold'>Max Point of Map: </span><span>" + r[i].pmax.lat + ", " + r[i].pmax.lng + "</span><br/>";
             html += "<span class='bold'>Min Point of Map: </span><span>" + r[i].pmin.lat + ", " + r[i].pmin.lng + "</span><br/>";
-            html += "<a href='javascript:void(0)' onclick=\"create_grid('" + r[i].city + "','" + r[i].id + "')\">Create Grid</a> | ";
-            html += "<a href='javascript:void(0)' onclick=\"create_graph('" + r[i].city + "','" + r[i].id + "')\">Create Graph Model</a> | ";
-            html += "<a href='javascript:void(0)' onclick=\"clear_orphan('" + r[i].city + "','" + r[i].id + "')\">Clear Orphan Roads</a> | ";
+            //html += "<a href='javascript:void(0)' onclick=\"create_grid('" + r[i].city + "','" + r[i].id + "')\">Create Grid</a> | ";
+            //html += "<a href='javascript:void(0)' onclick=\"create_graph('" + r[i].city + "','" + r[i].id + "')\">Create Graph Model</a> | ";
+            html += "<a href='javascript:void(0)' onclick=\"export_map('" + r[i].city + "','" + r[i].id + "')\">Export</a> | ";
             html += "<a href='javascript:void(0)' onclick=\"delete_map('" + r[i].city + "','" + r[i].id + "')\" class='text-danger'>Delete</a>";
             html += "</p>";
             $("#map-list-container").append(html);
@@ -109,24 +110,24 @@ function delete_map(city, id) {
     });
 }
 
-function clear_orphan(city, id) {
+function export_map(city, id) {
     bootbox.dialog({
-        title: "Clear Orphan Roads",
-        message: "<p>The orphan roads (roads are not connected to any other roads) of the following map(s) will be deleted:</p><p class='text-danger'>" + city + " (ID: " + id + ")</p>",
+        title: "Export Map",
+        message: "<p>The following map(s) will be exported:</p><p class='text-danger'>" + city + " (ID: " + id + ")</p>",
         buttons: {
             Proceed: function () {
                 bootbox.dialog({
-                    message: "<i class='fa fa-spinner'></i> Clearing orphan roads, please be patient...",
+                    message: "<i class='fa fa-spinner'></i> Exporting map, please be patient...",
                     closeButton: false
                 });
-                $.get(API_SERVER + "avatar/road_network/clear_orphan/?id=" + id, function (r) {
+                $.get(API_SERVER + "avatar/road_network/export/?id=" + id, function (r) {
                     bootbox.hideAll();
-                    bootbox.alert(r["removed"] + " orphan roads have been successfully cleared.", function () {
+                    bootbox.alert(success_message("The requested map has been successfully exported."), function () {
                         location.reload();
                     });
                 }).fail(function () {
                     bootbox.hideAll();
-                    bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while clearing orphan roads!</span>");
+                    bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while exporting the map!</span>");
                 });
             }
         }
@@ -152,11 +153,11 @@ function map_file_import(file) {
         if (city != null && city != "") {
             bootbox.hideAll();
             bootbox.dialog({
-                message: "<i class='fa fa-spinner'></i> Importing \"" + file + "\", please be patient...",
+                message: loading_message("Importing \"" + file + "\", please be patient..."),
                 closeButton: false
             });
             $.get(API_SERVER + "avatar/road_network/create/?city=" + city + "&src=" + file, function (r) {
-                var msg = "<p>Import completed successfully.</p>";
+                var msg = "<p>" + success_message("Import completed successfully.") + "</p>";
                 msg += "<p>";
                 msg += "Road Network ID: " + r["road_network_id"] + "<br/>";
                 msg += "Road Network Name: " + r["road_network_name"] + "<br/>";
@@ -164,10 +165,30 @@ function map_file_import(file) {
                 msg += "# of Intersections: " + r["intersection_count"];
                 msg += "</p>";
                 bootbox.hideAll();
-                bootbox.alert(msg);
+                bootbox.dialog({
+                    message: loading_message("Creating grid system, please be patient..."),
+                    closeButton: false
+                });
+                $.get(API_SERVER + "avatar/road_network/grid/create/?id=" + id, function (r) {
+                    bootbox.hideAll();
+                    bootbox.dialog({
+                        message: loading_message("Creating graph model, please be patient..."),
+                        closeButton: false
+                    });
+                    $.get(API_SERVER + "avatar/road_network/graph/create/?id=" + id, function (r) {
+                        bootbox.hideAll();
+                        bootbox.alert(msg);
+                    }).fail(function () {
+                        bootbox.hideAll();
+                        bootbox.alert(error_message("Cannot create graph model!"));
+                    });
+                }).fail(function () {
+                    bootbox.hideAll();
+                    bootbox.alert(error_message("Cannot create grid system!"));
+                });
             }).fail(function () {
                 bootbox.hideAll();
-                bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while processing the file! Maybe the city name is duplicated.</span>");
+                bootbox.alert(error_message("Cannot import map! Maybe the city name is duplicated."));
             });
         }
     });

@@ -1,6 +1,6 @@
 <html>
 <head>
-    <?php require "php/lib.php"; ?>
+    <?php require "lib.php"; ?>
     <title>The Avatar System: Trajectory Management</title>
     <link rel="stylesheet" href="lib/ion.rangeslider-2.0.13/css/ion.rangeSlider.css"/>
     <link rel="stylesheet" href="lib/ion.rangeslider-2.0.13/css/ion.rangeSlider.skinFlat.css"/>

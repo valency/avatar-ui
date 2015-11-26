@@ -21,3 +21,5 @@
 <script src="lib/moment.js"></script>
 
 <script src="js/common.js"></script>
+<script src="js/conf.js"></script>
+<script src="js/auth.js"></script>

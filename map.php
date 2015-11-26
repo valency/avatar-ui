@@ -1,6 +1,6 @@
 <html>
 <head>
-    <?php require "php/lib.php"; ?>
+    <?php require "lib.php"; ?>
     <title>The Avatar System: Map Management</title>
     <script src="lib/jquery-file-upload-9.10.4/js/vendor/jquery.ui.widget.js"></script>
     <script src="lib/jquery-file-upload-9.10.4/js/jquery.iframe-transport.js"></script>
