@@ -18,7 +18,7 @@
 </legend>
 <div class="tabbable">
     <ul class="nav nav-pills nav-stacked col-md-2">
-        <li class="active"><a href="#traj-management" data-toggle="tab">Map Management</a></li>
+        <li class="active"><a href="#traj-management" data-toggle="tab">Trajectory Management</a></li>
         <li><a href="#data-management" data-toggle="tab">Data Management</a></li>
     </ul>
     <div class="tab-content col-md-10">
@@ -65,7 +65,7 @@
                     while (false !== ($entry = readdir($handle))) {
                         if ($entry != "." && $entry != ".." && pathinfo($entry, PATHINFO_EXTENSION) == "csv") {
                             echo "<tr>";
-                            echo "<td><a href='data/" . $entry . "' target='_blank'><i class='fa fa-file-o'></i> " . $entry . "</a></td>";
+                            echo "<td><a href='data/trajectory/" . $entry . "' target='_blank'><i class='fa fa-file-o'></i> " . $entry . "</a></td>";
                             echo "<td>" . date("Y-m-d H:i:s", filemtime('./data/trajectory/' . $entry)) . "</td>";
                             echo "<td>" . number_format(filesize('./data/trajectory/' . $entry)) . "</td>";
                             echo "<td>";

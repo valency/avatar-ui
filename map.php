@@ -46,9 +46,10 @@
                 <tbody>
                 <?php if ($handle = opendir('./data/map/')) {
                     while (false !== ($entry = readdir($handle))) {
-                        if ($entry != "." && $entry != ".." && pathinfo($entry, PATHINFO_EXTENSION) == "csv") {
+                        $extension = pathinfo($entry, PATHINFO_EXTENSION);
+                        if ($entry != "." && $entry != ".." && ($extension == "csv" || $extension == "json")) {
                             echo "<tr>";
-                            echo "<td><a href='data/" . $entry . "' target='_blank'><i class='fa fa-file-o'></i> " . $entry . "</a></td>";
+                            echo "<td><a href='data/map/" . $entry . "' target='_blank'><i class='fa fa-file-o'></i> " . $entry . "</a></td>";
                             echo "<td>" . date("Y-m-d H:i:s", filemtime('./data/map/' . $entry)) . "</td>";
                             echo "<td>" . number_format(filesize('./data/map/' . $entry)) . "</td>";
                             echo "<td>";
