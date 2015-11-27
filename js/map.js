@@ -157,6 +157,7 @@ function map_file_import(file) {
                 closeButton: false
             });
             $.get(API_SERVER + "avatar/road_network/create/?city=" + city + "&src=" + file, function (r) {
+                var id = r["road_network_id"];
                 var msg = "<p>" + success_message("Import completed successfully.") + "</p>";
                 msg += "<p>";
                 msg += "Road Network ID: " + r["road_network_id"] + "<br/>";
