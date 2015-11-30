@@ -20,7 +20,8 @@ $(document).ready(function () {
             var html = "";
             if (i > 0) html += "<hr/>";
             html += "<p>";
-            html += "<span class='text-primary'><i class='fa fa-cube'></i> " + r[i].city + "</span><br/>";
+            html += "<span class='text-primary'><i class='fa fa-map'></i> " + r[i].city + "</span> | ";
+            html += "<a href='javascript:void(0)' onclick=\"delete_map('" + r[i].city + "','" + r[i].id + "')\" class='text-danger'><i class='fa fa-times'></i> Delete</a><br/>";
             html += "<span class='bold'>Road Network ID: </span><span>" + r[i].id + "</span><br/>";
             html += "<span class='bold'># of Roads: </span><span>" + r[i].road_count + "</span><br/>";
             html += "<span class='bold'># of Intersections: </span><span>" + r[i].intersection_count + "</span><br/>";
@@ -28,11 +29,7 @@ $(document).ready(function () {
             html += "<span class='bold'># of Grid Cells on Latitude: </span><span>" + r[i].grid_lat_count + "</span><br/>";
             html += "<span class='bold'># of Grid Cells on Longitude: </span><span>" + r[i].grid_lng_count + "</span><br/>";
             html += "<span class='bold'>Max Point of Map: </span><span>" + r[i].pmax.lat + ", " + r[i].pmax.lng + "</span><br/>";
-            html += "<span class='bold'>Min Point of Map: </span><span>" + r[i].pmin.lat + ", " + r[i].pmin.lng + "</span><br/>";
-            //html += "<a href='javascript:void(0)' onclick=\"create_grid('" + r[i].city + "','" + r[i].id + "')\">Create Grid</a> | ";
-            //html += "<a href='javascript:void(0)' onclick=\"create_graph('" + r[i].city + "','" + r[i].id + "')\">Create Graph Model</a> | ";
-            html += "<a href='javascript:void(0)' onclick=\"export_map('" + r[i].city + "','" + r[i].id + "')\">Export</a> | ";
-            html += "<a href='javascript:void(0)' onclick=\"delete_map('" + r[i].city + "','" + r[i].id + "')\" class='text-danger'>Delete</a>";
+            html += "<span class='bold'>Min Point of Map: </span><span>" + r[i].pmin.lat + ", " + r[i].pmin.lng + "</span>";
             html += "</p>";
             $("#map-list-container").append(html);
         }
@@ -40,54 +37,6 @@ $(document).ready(function () {
     $('#maps-table').DataTable();
 });
 
-
-function create_grid(city, id) {
-    bootbox.dialog({
-        title: "Create Grid",
-        message: "<p>Grid system (necessary for map-matching and other grid-based functions) of the following map(s) will be created:</p><p class='text-danger'>" + city + " (ID: " + id + ")</p>",
-        buttons: {
-            Proceed: function () {
-                bootbox.dialog({
-                    message: "<i class='fa fa-spinner'></i> Creating grid system, please be patient...",
-                    closeButton: false
-                });
-                $.get(API_SERVER + "avatar/road_network/grid/create/?id=" + id, function (r) {
-                    bootbox.hideAll();
-                    bootbox.alert(r["grid_cell_count"] + " grid cells have been successfully created.", function () {
-                        location.reload();
-                    });
-                }).fail(function () {
-                    bootbox.hideAll();
-                    bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while creating the grid system!</span>");
-                });
-            }
-        }
-    });
-}
-
-function create_graph(city, id) {
-    bootbox.dialog({
-        title: "Create Graph Model",
-        message: "<p>Graph model (necessary for map-matching and some other functions) of the following map(s) will be created:</p><p class='text-danger'>" + city + " (ID: " + id + ")</p>",
-        buttons: {
-            Proceed: function () {
-                bootbox.dialog({
-                    message: "<i class='fa fa-spinner'></i> Creating graph model, please be patient...",
-                    closeButton: false
-                });
-                $.get(API_SERVER + "avatar/road_network/graph/create/?id=" + id, function (r) {
-                    bootbox.hideAll();
-                    bootbox.alert("Graph model has been successfully created.", function () {
-                        location.reload();
-                    });
-                }).fail(function () {
-                    bootbox.hideAll();
-                    bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while creating the graph model!</span>");
-                });
-            }
-        }
-    });
-}
 
 function delete_map(city, id) {
     bootbox.dialog({
@@ -104,30 +53,6 @@ function delete_map(city, id) {
                 }).fail(function () {
                     bootbox.hideAll();
                     bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while deleting the map!</span>");
-                });
-            }
-        }
-    });
-}
-
-function export_map(city, id) {
-    bootbox.dialog({
-        title: "Export Map",
-        message: "<p>The following map(s) will be exported:</p><p class='text-danger'>" + city + " (ID: " + id + ")</p>",
-        buttons: {
-            Proceed: function () {
-                bootbox.dialog({
-                    message: "<i class='fa fa-spinner'></i> Exporting map, please be patient...",
-                    closeButton: false
-                });
-                $.get(API_SERVER + "avatar/road_network/export/?id=" + id, function (r) {
-                    bootbox.hideAll();
-                    bootbox.alert(success_message("The requested map has been successfully exported."), function () {
-                        location.reload();
-                    });
-                }).fail(function () {
-                    bootbox.hideAll();
-                    bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while exporting the map!</span>");
                 });
             }
         }
