@@ -14,8 +14,9 @@
         <div class="btn-group pull-right">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-cog"></i></a>
             <ul class="dropdown-menu">
-                <li><a href="map.php" target="_blank">Map Management</a></li>
                 <li><a href="trajectory.php" target="_blank">Trajectory Management</a></li>
+                <li><a href="map.php" target="_blank">Map Management</a></li>
+                <li><a href="system.php" target="_blank">System Management</a></li>
             </ul>
         </div>
     </div>
