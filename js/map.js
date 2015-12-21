@@ -20,8 +20,7 @@ $(document).ready(function () {
             var html = "";
             if (i > 0) html += "<hr/>";
             html += "<p>";
-            html += "<span class='text-primary'><i class='fa fa-map'></i> " + r[i].city + "</span> | ";
-            html += "<a href='javascript:void(0)' onclick=\"delete_map('" + r[i].city + "','" + r[i].id + "')\" class='text-danger'><i class='fa fa-times'></i> Delete</a><br/>";
+            html += "<span class='text-success'><i class='fa fa-map'></i> " + r[i].city + "</span><br/>";
             html += "<span class='bold'>Road Network ID: </span><span>" + r[i].id + "</span><br/>";
             html += "<span class='bold'># of Roads: </span><span>" + r[i].road_count + "</span><br/>";
             html += "<span class='bold'># of Intersections: </span><span>" + r[i].intersection_count + "</span><br/>";
@@ -29,7 +28,9 @@ $(document).ready(function () {
             html += "<span class='bold'># of Grid Cells on Latitude: </span><span>" + r[i].grid_lat_count + "</span><br/>";
             html += "<span class='bold'># of Grid Cells on Longitude: </span><span>" + r[i].grid_lng_count + "</span><br/>";
             html += "<span class='bold'>Max Point of Map: </span><span>" + r[i].pmax.lat + ", " + r[i].pmax.lng + "</span><br/>";
-            html += "<span class='bold'>Min Point of Map: </span><span>" + r[i].pmin.lat + ", " + r[i].pmin.lng + "</span>";
+            html += "<span class='bold'>Min Point of Map: </span><span>" + r[i].pmin.lat + ", " + r[i].pmin.lng + "</span><br/>";
+            html += "<a href='" + API_SERVER + "avatar/road_network/export/?id=" + r[i].id + "' target='_blank'><i class='fa fa-download'></i> Download</a> | ";
+            html += "<a href='javascript:void(0)' onclick=\"delete_map('" + r[i].city + "','" + r[i].id + "')\" class='text-danger'><i class='fa fa-times'></i> Delete</a>";
             html += "</p>";
             $("#map-list-container").append(html);
         }
@@ -45,14 +46,14 @@ function delete_map(city, id) {
         buttons: {
             Proceed: function () {
                 bootbox.dialog({
-                    message: "<i class='fa fa-spinner'></i> Deleting map, please be patient...",
+                    message: loading_message("Deleting map, please be patient..."),
                     closeButton: false
                 });
                 $.get(API_SERVER + "avatar/road_network/remove/?id=" + id, function (r) {
                     location.reload();
                 }).fail(function () {
                     bootbox.hideAll();
-                    bootbox.alert("<span class='text-danger'><i class='fa fa-warning'></i> Something is wrong while deleting the map!</span>");
+                    bootbox.alert(error_message("Something is wrong while deleting the map!"));
                 });
             }
         }

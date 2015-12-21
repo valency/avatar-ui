@@ -68,6 +68,6 @@ function warning_message(msg) {
     return "<span class='text-warning'><i class='fa fa-exclamation-circle'></i> WARNING: " + msg + "</span>";
 }
 
-function loading_message(msg){
-    return "<span class=''><i class='fa fa-spinner'></i> " + msg + "</span>";
+function loading_message(msg) {
+    return "<span class='text-info'><i class='fa fa-spinner'></i> " + msg + "</span>";
 }
