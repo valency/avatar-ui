@@ -130,8 +130,8 @@ function plot() {
     for (var i = 0; i < traj.trace.p.length; i++) {
         var p = traj.trace.p[i];
         points.push(p.p);
-        p["marker"] = new L.Marker({
-            lat: p.p,
+        p["marker"] = L.Marker({
+            latlng: p.p,
             title: i.toString(),
             draggable: traj.path != null
         }).addTo(map);
@@ -243,11 +243,11 @@ function plot() {
         }
     }
     console.log(points);
-    var polyline = L.polyline({lat: points[0]}, {color: TRACE_COLOR}).addTo(map);
+    var polyline = L.polyline({latlng: points[0]}, {color: TRACE_COLOR}).addTo(map);
     map.fitBounds(polyline.getBounds());
     // Plot trace
     traj.trace.object = new L.Polyline({
-        lat: points,
+        latlng: points,
         stroke: true,
         color: TRACE_COLOR,
         opacity: 0
@@ -260,7 +260,7 @@ function plot() {
                 points.push(traj.path.road[i].road.p[j]);
             }
             traj.path.road[i].object = new L.Polyline({
-                lat: points,
+                latlng: points,
                 stroke:true,
                 color: PATH_COLOR,
                 opacity: 0.9,
