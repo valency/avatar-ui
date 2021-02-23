@@ -131,7 +131,7 @@ function plot() {
         var p = traj.trace.p[i];
         points.push(p.p);
         p["marker"] = new L.Marker({
-            latlng: p.p,
+            lat: p.p,
             title: i.toString(),
             draggable: traj.path != null
         }).addTo(map);
@@ -242,9 +242,9 @@ function plot() {
             });
         }
     }
+    console.log(points);
     var polyline = L.polyline({lat: points[0]}, {color: TRACE_COLOR}).addTo(map);
     map.fitBounds(polyline.getBounds());
-    console.log(points)
     // Plot trace
     traj.trace.object = new L.Polyline({
         lat: points,
