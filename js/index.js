@@ -136,7 +136,7 @@ function plot() {
         }).addTo(map);
         console.log(p["marker"]);
         // Handel marker events
-        p["marker"].addListener("click", function () {
+        p["marker"].on("click", function () {
             var sequence = this.title;
             var msg = "<span class='bold text-danger'>Point " + sequence + "</span><hr/>";
             msg += "<span class='bold'>ID: </span>" + traj.trace.p[sequence]["id"] + "<br/>";
@@ -159,14 +159,14 @@ function plot() {
                 map_matched_road = null;
             }
             info_window = p["marker"].bindPopup(msg);
-            info_window.addListener("closeclick", function () {
+            info_window.on("closeclick", function () {
                 if (map_matched_road) map_matched_road.setMap(null);
                 map_matched_road = null;
             });
             info_window.openPopup(map);
         });
         if (traj.path) {
-            p["marker"].addListener("dragstart", function (type, target) {
+            p["marker"].on("dragstart", function (type, target) {
                 if (info_window) {
                     
                     if (map_matched_road) map_matched_road.setMap(null);
@@ -194,7 +194,7 @@ function plot() {
                 drag_road = {rendered: true};
                 dragging = true;
             });
-            p["marker"].addListener("drag", function (type, target, pixel, point) {
+            p["marker"].on("drag", function (type, target, pixel, point) {
                 if (drag_road.rendered) {
                     drag_road.rendered = false;
                     $.get(API_SERVER + "avatar/map-matching/find_candidates/?city=" + $("#search-city").val() + "&lat=" + this.getPosition().lat() + "&lng=" + this.getPosition().lng(), function (candidates) {
@@ -211,7 +211,7 @@ function plot() {
                     });
                 }
             });
-            p["marker"].addListener("dragend", function (type, target, pixel, point) {
+            p["marker"].on("dragend", function (type, target, pixel, point) {
                 var sequence = this.title;
                 var p = traj["trace"]["p"][sequence];
                 // Stop dragging flag
