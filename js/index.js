@@ -13,14 +13,18 @@ var drag_marker_position = null;
 var drag_road = null;
 var dragging = false;
 
+
 $(document).ready(function () {
     // Map
-    $("#map-canvas").width($(window).width() - 300);
-    map = new google.maps.Map(document.getElementById('map-canvas'), {
-        center: {lat: 39.915, lng: 116.404},
+    var mapurl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+    map = L.map('map-canvas', {
+        center: [39.915, 116.404],
         zoom: 15,
-        mapTypeId: google.maps.MapTypeId.SATELLITE
     });
+
+    L.tileLayer(mapurl).addTo(map);
+  
     // Login
     var username = check_login();
     if (username) {
@@ -70,7 +74,6 @@ $(document).ready(function () {
 function search(trajid) {
     // Clear out
     if (info_window) {
-        info_window.close();
         if (map_matched_road) map_matched_road.setMap(null);
         map_matched_road = null;
     }
@@ -127,12 +130,11 @@ function plot() {
     for (var i = 0; i < traj.trace.p.length; i++) {
         var p = traj.trace.p[i];
         points.push(p.p);
-        p["marker"] = new google.maps.Marker({
-            position: p.p,
-            map: map,
+        p["marker"] = new L.Marker({
+            latlng: p.p,
             title: i.toString(),
             draggable: traj.path != null
-        });
+        }).addTo(map);
         // Handel marker events
         p["marker"].addListener("click", function () {
             var sequence = this.title;
@@ -152,23 +154,21 @@ function plot() {
                 });
             }
             if (info_window) {
-                info_window.close();
+                
                 if (map_matched_road) map_matched_road.setMap(null);
                 map_matched_road = null;
             }
-            info_window = new google.maps.InfoWindow({
-                content: msg
-            });
+            info_window = p["marker"].bindPopup(msg);
             info_window.addListener("closeclick", function () {
                 if (map_matched_road) map_matched_road.setMap(null);
                 map_matched_road = null;
             });
-            info_window.open(map, this);
+            info_window.openPopup(map);
         });
         if (traj.path) {
             p["marker"].addListener("dragstart", function (type, target) {
                 if (info_window) {
-                    info_window.close();
+                    
                     if (map_matched_road) map_matched_road.setMap(null);
                     map_matched_road = null;
                 }
@@ -242,24 +242,16 @@ function plot() {
             });
         }
     }
-    map.panTo(points[0]);
+    var polyline = L.polyline(points[0], {color: TRACE_COLOR}).addTo(map);
+    map.fitBounds(polyline.getBounds());
+    console.log(points)
     // Plot trace
-    traj.trace.object = new google.maps.Polyline({
-        path: points,
-        geodesic: true,
-        strokeColor: TRACE_COLOR,
-        strokeOpacity: 0,
-        icons: [{
-            icon: {
-                path: 'M 0,-1 0,1',
-                strokeOpacity: 0.9,
-                scale: 3
-            },
-            offset: '0',
-            repeat: '20px'
-        }]
-    });
-    traj.trace.object.setMap(map);
+    traj.trace.object = new L.Polyline({
+        points,
+        stroke: true,
+        color: TRACE_COLOR,
+        opacity: 0
+    }).addTo(map);
     // Plot path
     if (traj.path) {
         for (i = 0; i < traj.path.road.length; i++) {
@@ -267,14 +259,14 @@ function plot() {
             for (var j = 0; j < traj.path.road[i].road.p.length; j++) {
                 points.push(traj.path.road[i].road.p[j]);
             }
-            traj.path.road[i].object = new google.maps.Polyline({
-                path: points,
-                geodesic: true,
-                strokeColor: PATH_COLOR,
-                strokeOpacity: 0.9,
-                strokeWeight: 3
+            traj.path.road[i].object = new L.Polyline({
+                points,
+                stroke:true,
+                color: PATH_COLOR,
+                opacity: 0.9,
+                weight: 3
             });
-            traj.path.road[i].object.setMap(map);
+            traj.path.road[i].object.addTo(map);
         }
     }
     bootbox.hideAll();
@@ -287,11 +279,11 @@ function render_road(road_id, color, callback) {
             points.push(road.p[i]);
         }
         var road_object = new google.maps.Polyline({
-            path: points,
-            geodesic: true,
-            strokeColor: color,
-            strokeOpacity: 1.0,
-            strokeWeight: 5,
+            points,
+            stroke: true,
+            color: color,
+            opacity: 1.0,
+            weight: 5,
             zIndex: 999
         });
         road_object.setMap(map);
