@@ -242,7 +242,7 @@ function plot() {
             });
         }
     }
-    var polyline = L.polyline(points[0], {color: TRACE_COLOR}).addTo(map);
+    var polyline = L.polyline({lat: points[0]}, {color: TRACE_COLOR}).addTo(map);
     map.fitBounds(polyline.getBounds());
     console.log(points)
     // Plot trace
