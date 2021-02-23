@@ -247,7 +247,7 @@ function plot() {
     console.log(points)
     // Plot trace
     traj.trace.object = new L.Polyline({
-        points,
+        lat: points,
         stroke: true,
         color: TRACE_COLOR,
         opacity: 0
@@ -260,7 +260,7 @@ function plot() {
                 points.push(traj.path.road[i].road.p[j]);
             }
             traj.path.road[i].object = new L.Polyline({
-                points,
+                lat: points,
                 stroke:true,
                 color: PATH_COLOR,
                 opacity: 0.9,
@@ -279,7 +279,7 @@ function render_road(road_id, color, callback) {
             points.push(road.p[i]);
         }
         var road_object = new google.maps.Polyline({
-            points,
+            lat: points,
             stroke: true,
             color: color,
             opacity: 1.0,
