@@ -131,8 +131,7 @@ function plot() {
         var p = traj.trace.p[i];
         delete p.p.id;
         points.push(p.p);
-        p["marker"] = L.marker({
-            latlng: p.p,
+        p["marker"] = L.marker(p.p, {
             title: i.toString()
         }).addTo(map);
         console.log(p["marker"]);
@@ -244,11 +243,10 @@ function plot() {
        }
     }
     console.log(points);
-    var polyline = L.polyline({latlng: points[0]}, {color: TRACE_COLOR}).addTo(map);
+    var polyline = L.polyline(points[0], {color: TRACE_COLOR}).addTo(map);
     map.fitBounds(polyline.getBounds());
     // Plot trace
-    traj.trace.object = new L.Polyline({
-        latlng: points,
+    traj.trace.object = L.Polyline(points,{
         stroke: true,
         color: TRACE_COLOR,
         opacity: 0
@@ -260,8 +258,7 @@ function plot() {
             for (var j = 0; j < traj.path.road[i].road.p.length; j++) {
                 points.push(traj.path.road[i].road.p[j]);
             }
-            traj.path.road[i].object = new L.Polyline({
-                latlng: points,
+            traj.path.road[i].object = L.Polyline(points,{
                 stroke:true,
                 color: PATH_COLOR,
                 opacity: 0.9,
@@ -279,15 +276,13 @@ function render_road(road_id, color, callback) {
         for (var i = 0; i < road.p.length; i++) {
             points.push(road.p[i]);
         }
-        var road_object = new google.maps.Polyline({
-            lat: points,
+        var road_object =  L.Polyline(points,{
             stroke: true,
             color: color,
             opacity: 1.0,
             weight: 5,
             zIndex: 999
-        });
-        road_object.setMap(map);
+        }).addTo(map);
         callback(road_object);
     });
 }
