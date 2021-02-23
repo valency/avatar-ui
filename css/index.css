@@ -9,9 +9,8 @@ hr {
 
 #map-canvas {
     height: 100%;
-    left: 300px;
-    top: 0;
-    position: fixed;
+    margin-left: 300px;
+    position: relative;
 }
 
 #dashboard-container {
