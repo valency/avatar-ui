@@ -1,4 +1,4 @@
-var TRACE_COLOR = "white";
+var TRACE_COLOR = "#2ea44f";
 var PATH_COLOR = "#3399FF";
 var MAP_MATCHED_ROAD_COLOR = "#FF9933";
 var CANDIDATE_ROAD_COLOR = "red";
@@ -132,7 +132,8 @@ function plot() {
         delete p.p.id;
         points.push(p.p);
         p["marker"] = L.marker(p.p, {
-            title: i.toString()
+            title: i.toString(),
+            draggable: traj.path != null
         }).addTo(map);
         console.log(p["marker"]);
         // Handel marker events
