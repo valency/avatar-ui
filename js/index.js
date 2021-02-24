@@ -138,7 +138,7 @@ function plot() {
         console.log(p["marker"]);
         // Handel marker events
         p["marker"].on("click", function () {
-            var sequence = this.title;
+            var sequence = this.options.title;
             var msg = "<span class='bold text-danger'>Point " + sequence + "</span><hr/>";
             msg += "<span class='bold'>ID: </span>" + traj.trace.p[sequence]["id"] + "<br/>";
             msg += "<span class='bold'>Time Stamp: </span>" + traj.trace.p[sequence]["t"] + "<br/>";
