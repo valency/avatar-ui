@@ -30,7 +30,18 @@ $(document).ready(function () {
             $("#search-city").append("<option value='" + data[i].id + "'>" + data[i].city + "</option>");
         }
     });
-    $('#traj-table').DataTable();
+    
+    $.get(API_SERVER + "avatar/list/?type=0", (data)=>{
+        data.map((fileObj)=>{
+            var html = "<tr>"
+            html += "<td><a href='data/trajectory/"+ fileObj.name + "' target='_blank'><i class='fa fa-file-o'></i>"+ fileObj.name +"</a></td>"
+            html +="<td>"+fileObj.time+"</td><td>"+fileObj.size+"</td>"
+            html +="<td>"+"<a href='javascript:void(0)' onclick=\"traj_file_import('"+ fileObj.name +"')\">Import</a> | "+"<a href='javascript:void(0)' onclick=\"traj_file_delete('"+ fileObj.name+ "')\" class='text-danger'>Delete</a></td>"
+            html +="</tr>"  
+            $('#traj-table>tbody').append(html)
+        });
+        $('#traj-table').DataTable();
+    });
 });
 
 
@@ -200,7 +211,7 @@ function traj_file_delete(file) {
         message: "<p>The following file(s) will be deleted:</p><p class='text-danger'>" + file + "</p>",
         buttons: {
             Proceed: function () {
-                $.get("data/trajectory/delete.php?f=" + file, function (r) {
+                $.get("api/avatar/delete/?type=0&file=" + file, function (r) {
                     location.reload();
                 });
             }

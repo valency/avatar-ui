@@ -74,18 +74,18 @@ $(document).ready(function () {
 function search(trajid) {
     // Clear out
     if (info_window) {
-        if (map_matched_road) map_matched_road.setMap(null);
+        if (map_matched_road) map.removeLayer(map_matched_road);
         map_matched_road = null;
     }
     if (traj) {
         for (var i = 0; i < traj.trace.p.length; i++) {
             var marker = traj.trace.p[i].marker;
-            if (marker) marker.setMap(null);
+            if (marker) map.removeLayer(marker);
         }
-        if (traj.trace.object) traj.trace.object.setMap(null);
+        if (traj.trace.object) map.removeLayer(traj.trace.object);
         if (traj.path) {
             for (i = 0; i < traj.path.road.length; i++) {
-                if (traj.path.road[i].object) traj.path.road[i].object.setMap(null);
+                if (traj.path.road[i].object) map.removeLayer(traj.path.road[i].object);
             }
         }
     }
@@ -135,18 +135,20 @@ function plot() {
             title: i.toString(),
             draggable: traj.path != null
         }).addTo(map);
-        console.log(p["marker"]);
+
+        var sequence = p["marker"].options.title;
+        var msg = "<span class='bold text-danger'>Point " + sequence + "</span><hr/>";
+        msg += "<span class='bold'>ID: </span>" + traj.trace.p[sequence]["id"] + "<br/>";
+        msg += "<span class='bold'>Time Stamp: </span>" + traj.trace.p[sequence]["t"] + "<br/>";
+        msg += "<span class='bold'>Latitude : </span>" + traj.trace.p[sequence]["p"]["lat"] + "<br/>";
+        msg += "<span class='bold'>Longitude: </span>" + traj.trace.p[sequence]["p"]["lng"] + "<br/>";
+        msg += "<span class='bold'>Speed: </span>" + traj.trace.p[sequence]["speed"] + "<br/>";
+        msg += "<span class='bold'>Angle: </span>" + traj.trace.p[sequence]["angle"] + "<br/>";
+        msg += "<span class='bold'>Occupancy: </span>" + traj.trace.p[sequence]["occupy"];
+        
+        p["marker"].bindPopup(msg);
         // Handel marker events
         p["marker"].on("click", function () {
-            var sequence = this.options.title;
-            var msg = "<span class='bold text-danger'>Point " + sequence + "</span><hr/>";
-            msg += "<span class='bold'>ID: </span>" + traj.trace.p[sequence]["id"] + "<br/>";
-            msg += "<span class='bold'>Time Stamp: </span>" + traj.trace.p[sequence]["t"] + "<br/>";
-            msg += "<span class='bold'>Latitude : </span>" + traj.trace.p[sequence]["p"]["lat"] + "<br/>";
-            msg += "<span class='bold'>Longitude: </span>" + traj.trace.p[sequence]["p"]["lng"] + "<br/>";
-            msg += "<span class='bold'>Speed: </span>" + traj.trace.p[sequence]["speed"] + "<br/>";
-            msg += "<span class='bold'>Angle: </span>" + traj.trace.p[sequence]["angle"] + "<br/>";
-            msg += "<span class='bold'>Occupancy: </span>" + traj.trace.p[sequence]["occupy"];
             if (traj.path) {
                 var path_road_sequence = find_map_matched_road_from_path(sequence);
                 msg += "<br/><span class='bold'>Map-Matched Road: </span>" + traj.path.road[path_road_sequence].road.id;
@@ -154,25 +156,26 @@ function plot() {
                     map_matched_road = road_object;
                 });
             }
+            p["marker"].bindPopup(msg).openPopup;;
+
             if (info_window) {
-                
-                if (map_matched_road) map_matched_road.setMap(null);
+                if (map_matched_road) map.removeLayer(map_matched_road);
                 map_matched_road = null;
             }
-            info_window = p["marker"].bindPopup(msg);
-            info_window.on("closeclick", function () {
-                if (map_matched_road) map_matched_road.setMap(null);
+            info_window = p["marker"]._popup;
+            info_window.on("remove", function () {
+                if (map_matched_road) map.removeLayer(map_matched_road);
                 map_matched_road = null;
             });
-            info_window.openPopup(map);
         });
+
         if (traj.path) {
             p["marker"].on("dragstart", function (type, target) {
                 if (info_window) {
-                    if (map_matched_road) map_matched_road.setMap(null);
+                    if (map_matched_road) map.removeLayer(map_matched_road);
                     map_matched_road = null;
                 }
-                var sequence = this.title;
+                var sequence = this.options.title;
                 // Draw current road
                 render_road(traj.path.road[find_map_matched_road_from_path(sequence)].road.id, MAP_MATCHED_ROAD_COLOR, function (road_object) {
                     map_matched_road = road_object;
@@ -184,12 +187,12 @@ function plot() {
                         render_road(candidates[i], CANDIDATE_ROAD_COLOR, function (road_object) {
                             candidate_roads.push(road_object);
                             // Only show road if dragging is still on
-                            if (!dragging) road_object.setMap(null);
+                            if (!dragging) map.removeLayer(road_object);
                         });
                     }
                 });
                 // Remember current position
-                drag_marker_position = this.getPosition();
+                drag_marker_position = this.getLatLng();
                 // Init target road object
                 drag_road = {rendered: true};
                 dragging = true;
@@ -197,16 +200,16 @@ function plot() {
             p["marker"].on("drag", function (type, target, pixel, point) {
                 if (drag_road.rendered) {
                     drag_road.rendered = false;
-                    $.get(API_SERVER + "avatar/map-matching/find_candidates/?city=" + $("#search-city").val() + "&lat=" + this.getPosition().lat() + "&lng=" + this.getPosition().lng(), function (candidates) {
+                    $.get(API_SERVER + "avatar/map-matching/find_candidates/?city=" + $("#search-city").val() + "&lat=" + this.getLatLng().lat + "&lng=" + this.getLatLng().lng, function (candidates) {
                         // Clear previous render
-                        if (drag_road.object) drag_road.object.setMap(null);
+                        if (drag_road.object) map.removeLayer(drag_road.object);
                         // Render
                         drag_road.id = candidates[0];
                         render_road(drag_road.id, TARGET_ROAD_COLOR, function (road_object) {
                             drag_road.object = road_object;
                             drag_road.rendered = true;
                             // Only show road if dragging is still on
-                            if (!dragging) road_object.setMap(null);
+                            if (!dragging) map.removeLayer(road_object);
                         });
                     });
                 }
@@ -217,15 +220,15 @@ function plot() {
                 // Stop dragging flag
                 dragging = false;
                 // Clean up previous road
-                if (map_matched_road) map_matched_road.setMap(null);
+                if (map_matched_road) map.removeLayer(map_matched_road);
                 // Clean up target road
-                if (drag_road.object) drag_road.object.setMap(null);
+                if (drag_road.object) map.removeLayer(drag_road.object);
                 // Clean up all candidate roads
                 for (var i = 0; i < candidate_roads.length; i++) {
-                    if (candidate_roads[i]) candidate_roads[i].setMap(null);
+                    if (candidate_roads[i]) map.removeLayer(candidate_roads[i]);
                 }
                 // Push back to original position
-                this.setPosition(drag_marker_position);
+                this.setLatLng(drag_marker_position);
                 // Re-perform map-matching
                 console.log("Trying to re-perform map-matching via: id = " + traj["id"] + ", pid = " + p["id"] + ", rid = " + drag_road["id"] + ", uid = " + $.cookie('avatar_id'));
                 bootbox.dialog({
@@ -240,17 +243,20 @@ function plot() {
                     bootbox.alert("<span class='text-danger'><i class='fa fa-exclamation-triangle'></i> Something is wrong during map-matching!</span>");
                 });
             });
-       }
+        }
+
     }
-    console.log(points);
-    var polyline = L.polyline(points, {color: TRACE_COLOR}).addTo(map);
+
+    var polyline = L.polyline(points, {color: TRACE_COLOR, weight: 4, className: 'dashLines', opacity: 0.5}).addTo(map);
     map.fitBounds(polyline.getBounds());
+
     // Plot trace
     traj.trace.object = L.polyline(points,{
         stroke: true,
         color: TRACE_COLOR,
         opacity: 0
     }).addTo(map);
+    
     // Plot path
     if (traj.path) {
         for (i = 0; i < traj.path.road.length; i++) {

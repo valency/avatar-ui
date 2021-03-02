@@ -26,3 +26,8 @@ hr {
 #dashboard-container > div {
     padding: 10px;
 }
+
+.dashLines {
+    stroke-dasharray: 10;
+    stroke: black;
+}
