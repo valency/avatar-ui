@@ -136,7 +136,7 @@ function plot() {
             draggable: traj.path != null
         }).addTo(map);
 
-        var sequence = p["marker"].options.title;
+        var sequence = p.marker.options.title;
         var msg = "<span class='bold text-danger'>Point " + sequence + "</span><hr/>";
         msg += "<span class='bold'>ID: </span>" + traj.trace.p[sequence]["id"] + "<br/>";
         msg += "<span class='bold'>Time Stamp: </span>" + traj.trace.p[sequence]["t"] + "<br/>";
@@ -145,24 +145,26 @@ function plot() {
         msg += "<span class='bold'>Speed: </span>" + traj.trace.p[sequence]["speed"] + "<br/>";
         msg += "<span class='bold'>Angle: </span>" + traj.trace.p[sequence]["angle"] + "<br/>";
         msg += "<span class='bold'>Occupancy: </span>" + traj.trace.p[sequence]["occupy"];
-        
+        if (traj.path) {
+            var path_road_sequence = find_map_matched_road_from_path(sequence);
+            msg += "<br/><span class='bold'>Map-Matched Road: </span>" + traj.path.road[path_road_sequence].road.id;
+        }
         p["marker"].bindPopup(msg);
         // Handel marker events
         p["marker"].on("click", function () {
             if (traj.path) {
-                var path_road_sequence = find_map_matched_road_from_path(sequence);
-                msg += "<br/><span class='bold'>Map-Matched Road: </span>" + traj.path.road[path_road_sequence].road.id;
+                var path_road_sequence = find_map_matched_road_from_path(this.options.title);
                 render_road(traj.path.road[path_road_sequence].road.id, MAP_MATCHED_ROAD_COLOR, function (road_object) {
                     map_matched_road = road_object;
                 });
             }
-            p["marker"].bindPopup(msg).openPopup;;
+            this.openPopup();
 
             if (info_window) {
                 if (map_matched_road) map.removeLayer(map_matched_road);
                 map_matched_road = null;
             }
-            info_window = p["marker"]._popup;
+            info_window = this._popup;
             info_window.on("remove", function () {
                 if (map_matched_road) map.removeLayer(map_matched_road);
                 map_matched_road = null;
@@ -215,7 +217,7 @@ function plot() {
                 }
             });
             p["marker"].on("dragend", function (type, target, pixel, point) {
-                var sequence = this.title;
+                var sequence = this.options.title;
                 var p = traj["trace"]["p"][sequence];
                 // Stop dragging flag
                 dragging = false;
