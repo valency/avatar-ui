@@ -1,6 +1,30 @@
 <html>
 <head>
-    <?php require "lib.php"; ?>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="initial-scale=1.0,user-scalable=no"/>
+    <link rel="shortcut icon" href="favicon.ico"/>
+    
+    <link rel="stylesheet" href="lib/jquery-ui-1.11.3/jquery-ui.min.css">
+    <link rel="stylesheet" href="lib/bootstrap-3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="lib/font-awesome-4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="lib/datatables-1.10.9/media/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="lib/paper.bootstrap.min.css">
+    
+    <link rel="stylesheet" href="css/avatar.css"/>
+    
+    <script src="lib/jquery-ui-1.11.3/external/jquery/jquery.js"></script>
+    <script src="lib/jquery-ui-1.11.3/jquery-ui.min.js"></script>
+    <script src="lib/jquery.cookie.js"></script>
+    <script src="lib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+    <script src="lib/bootstrap3-typeahead.min.js"></script>
+    <script src="lib/datatables-1.10.9/media/js/jquery.dataTables.min.js"></script>
+    <script src="lib/cryptojs-3.1.2/rollups/md5.js"></script>
+    <script src="lib/bootbox.min.js"></script>
+    <script src="lib/moment.js"></script>
+    
+    <script src="js/common.js"></script>
+    <script src="js/conf.js"></script>
+    <script src="js/auth.js"></script>
     <title>The Avatar System: Trajectory Management</title>
     <link rel="stylesheet" href="lib/ion.rangeslider-2.0.13/css/ion.rangeSlider.css"/>
     <link rel="stylesheet" href="lib/ion.rangeslider-2.0.13/css/ion.rangeSlider.skinFlat.css"/>
@@ -14,7 +38,7 @@
 <legend class="text-success">
     <img class="logo" src="img/logo.png"/>
     <span>Trajectory Management</span>
-    <span class="version">v0.<?php echo date("n.j", filemtime("./trajectory.php")); ?></span>
+    <span class="version">0.3.2</span>
 </legend>
 <div class="tabbable">
     <ul class="nav nav-pills nav-stacked col-md-2">
@@ -44,7 +68,7 @@
         <div class="tab-pane" id="data-management">
             <div>
                 <button class="btn btn-primary btn-xs" type="button" onclick="$('#file_upload').click();"><i class="fa fa-upload"></i> Upload New Trajectory Data</button>
-                <input id="file_upload" class="hidden" type="file" name="files[]" data-url="./data/trajectory/" multiple/>
+                <input id="file_upload" class="hidden" type="file" name="files[]" data-url="./api/avatar/traj/upload/" multiple/>
                 <span class="bold" style="margin-left:10px;">CSV Format, Required Headers:</span> <code>id</code>, <code>taxi</code>, <code>lat</code>, <code>lng</code>, <code title="yyyy-mm-dd hh:mm:ss">t</code>, <code>speed</code>, <code>angle</code>, <code>occupy</code>
             </div>
             <div class="progress" style="display:none;margin-top:20px;">
@@ -61,22 +85,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <?php if ($handle = opendir('./data/trajectory/')) {
-                    while (false !== ($entry = readdir($handle))) {
-                        if ($entry != "." && $entry != ".." && pathinfo($entry, PATHINFO_EXTENSION) == "csv") {
-                            echo "<tr>";
-                            echo "<td><a href='data/trajectory/" . $entry . "' target='_blank'><i class='fa fa-file-o'></i> " . $entry . "</a></td>";
-                            echo "<td>" . date("Y-m-d H:i:s", filemtime('./data/trajectory/' . $entry)) . "</td>";
-                            echo "<td>" . number_format(filesize('./data/trajectory/' . $entry)) . "</td>";
-                            echo "<td>";
-                            echo "<a href='javascript:void(0)' onclick=\"traj_file_import('" . $entry . "')\">Import</a> | ";
-                            echo "<a href='javascript:void(0)' onclick=\"traj_file_delete('" . $entry . "')\" class='text-danger'>Delete</a>";
-                            echo "</td>";
-                            echo "</tr>";
-                        }
-                    }
-                    closedir($handle);
-                } ?>
+                    
                 </tbody>
             </table>
         </div>

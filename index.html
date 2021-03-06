@@ -1,0 +1,67 @@
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="initial-scale=1.0,user-scalable=no"/>
+    <link rel="shortcut icon" href="favicon.ico"/>
+
+    <link rel="stylesheet" href="lib/jquery-ui-1.11.3/jquery-ui.min.css">
+    <link rel="stylesheet" href="lib/bootstrap-3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="lib/font-awesome-4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="lib/datatables-1.10.9/media/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="lib/paper.bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css">
+
+    <link rel="stylesheet" href="css/avatar.css"/>
+
+    <script src="lib/jquery-ui-1.11.3/external/jquery/jquery.js"></script>
+    <script src="lib/jquery-ui-1.11.3/jquery-ui.min.js"></script>
+    <script src="lib/jquery.cookie.js"></script>
+    <script src="lib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+    <script src="lib/bootstrap3-typeahead.min.js"></script>
+    <script src="lib/datatables-1.10.9/media/js/jquery.dataTables.min.js"></script>
+    <script src="lib/cryptojs-3.1.2/rollups/md5.js"></script>
+    <script src="lib/bootbox.min.js"></script>
+    <script src="lib/moment.js"></script>
+
+    
+    <script src="js/common.js"></script>
+    <script src="js/conf.js"></script>
+    <script src="js/auth.js"></script>
+    <title>The Avatar System</title>
+    <link rel="stylesheet" href="css/index.css"/>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+</head>
+<body>
+<div id="dashboard-container">
+    <div>
+        <img class="logo" src="img/logo.png" style="height:5em;"/>
+
+        <div class="btn-group pull-right">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-cog"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="trajectory.html" target="_blank">Trajectory Management</a></li>
+                <li><a href="map.html" target="_blank">Map Management</a></li>
+                <li><a href="system.html" target="_blank">System Management</a></li>
+            </ul>
+        </div>
+    </div>
+    <hr/>
+    <div class="row" id="user-form">
+        <div class="col-md-6 form-group">
+            <input id="username" class="form-control input-sm" placeholder="User Name"/>
+        </div>
+        <div class="col-md-6 form-group">
+            <input id="password" class="form-control input-sm" placeholder="Password" type="password" autocomplete="off"/>
+        </div>
+    </div>
+    <hr/>
+    <div class="hidden" id="traj-form">
+        <select id="search-city" class="form-control input-sm"></select>
+        <input id="search-id" class="form-control input-sm" placeholder="Trajectory ID"/>
+    </div>
+    <div id="console"></div>
+</div>
+<div id="map-canvas" class="leaflet-container leaflet-fade-anim leaflet-grab leaflet-touch-drag"></div>
+</body>
+</html>
